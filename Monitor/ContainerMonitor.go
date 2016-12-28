@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 	"time"
-
+	"sort"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,6 +24,8 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
 	var containerMonitor QueryContainerMonitor
 	containerMonitor.Return_code = 200
+
+	var containerMonitorKeys []string
 	//var err error
 	//MetricsName-->TimeStamp-->value
 	timeNameStatResult := make(map[string]map[string]int)
@@ -112,6 +114,8 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 				timeStat[k1].Data.Container_name = fmt.Sprintf("%s", ret[0].Series[0].Values[0][1])
 				timeStat[k1].Data.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][4])
 				timeStat[k1].Type = "container"
+
+				containerMonitorKeys = append(containerMonitorKeys, k1)
 				//time.Unix(0, intNanoTime).Format(RFC3339Nano)
 				//t := time.SecondsToLocalTime(1305861602)
 			}
@@ -220,13 +224,21 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	//monitorResult.Stats = make([]StatsInfo, len(timeStat))
 	containerMonitor.Query_result = make([]QueryMonitorUnit, len(timeStat))
 	index := 0
-	for k, _ := range timeStat {
+	/*for k, _ := range timeStat {
 		//fmt.Printf("%#v.\n",timeStat[k]);
 		//monitorResult.Stats[index] = *timeStat[k]
 		containerMonitor.Query_result[index]=  *timeStat[k]
 		
 		index++
-	}
+	}*/
+	sort.Strings(containerMonitorKeys) 
+	for _, k := range containerMonitorKeys {
+       // fmt.Println("Key:", k, "Value:", m[k])
+		containerMonitor.Query_result[index]=  *timeStat[k]
+		//fmt.Println(k)
+		index ++
+    }
+
 
 	_ = ret
 	_ = monitorResult
