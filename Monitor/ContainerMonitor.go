@@ -50,10 +50,10 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	if len(ret[0].Series) > 0 {
 		// monitorResult.
 		monitorResult.Timestamp = fmt.Sprintf("%s", ret[0].Series[0].Values[0][0])
-		monitorResult.Container_uuid = fmt.Sprintf("%s", ret[0].Series[0].Values[0][14])
-		monitorResult.Environment_id = fmt.Sprintf("%s", ret[0].Series[0].Values[0][24])
+		monitorResult.Container_uuid = fmt.Sprintf("%s", ret[0].Series[0].Values[0][2])
+		monitorResult.Environment_id = fmt.Sprintf("%s", ret[0].Series[0].Values[0][3])
 		monitorResult.Container_name = fmt.Sprintf("%s", ret[0].Series[0].Values[0][1])
-		monitorResult.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][24])
+		monitorResult.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][4])
 	}
 
 	for index := 0; index < len(ret[0].Series); index++ {
@@ -62,7 +62,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
 		for valIndex := 0; valIndex < len(se.Values); valIndex++ {
 			timeStr = fmt.Sprintf("%s", se.Values[valIndex][0])
-			valStr := fmt.Sprintf("%s", se.Values[valIndex][28])
+			valStr := fmt.Sprintf("%s", se.Values[valIndex][6])
 			val, err := strconv.Atoi(valStr)
 			_ = err
 			//fmt.Printf("%d :%s,%s,%s\n", index, se.Name, se.Values[valIndex][28], se.Values[valIndex][0])
@@ -114,16 +114,16 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 				break
 			case "memory_working_set":
 				break
-			case "rx_bytes":
+			case "container_network_receive_packets_total":
 				info.Container_network_receive_bytes_total = val
 				break
-			case "rx_errors":
+			case "container_network_receive_errors_total":
 				info.Container_network_receive_errors_total = val
 				break
-			case "tx_bytes":
+			case "container_network_transmit_bytes_total":
 				info.Container_network_transmit_bytes_total = val
 				break
-			case "tx_errors":
+			case "container_network_transmit_errors_total":
 				info.Container_network_transmit_errors_total = val
 				break
 			default:
