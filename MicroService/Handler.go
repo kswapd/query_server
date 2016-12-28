@@ -1,8 +1,8 @@
 package MicroService
 import (
     "github.com/gin-gonic/gin"
-    "Monitor"
-    "LogInfo"
+    "query_server/Monitor"
+    "query_server/LogInfo"
 )
 func OnPing(c *gin.Context) {
         c.JSON(200, gin.H{

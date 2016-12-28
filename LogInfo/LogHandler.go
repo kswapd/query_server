@@ -2,7 +2,7 @@ package LogInfo
 import (
     "fmt"
     "github.com/gin-gonic/gin"
-    "Common"
+    "query_server/Common"
     "log"
     "encoding/json"
     elastic "gopkg.in/olivere/elastic.v5"

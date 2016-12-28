@@ -1,7 +1,7 @@
 package Monitor
 
 import (
-	"Common"
+	"query_server/Common"
 	"fmt"
 	"log"
 

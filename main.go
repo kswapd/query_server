@@ -1,7 +1,7 @@
 package main
 
 import (
-    "MicroSettrvice"
+    "query_server/MicroService"
     "log"
 )
 
