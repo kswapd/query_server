@@ -2,11 +2,10 @@ package main
 
 import (
     "query_server/MicroService"
-    "log"
+	"log"
 )
 
-
 func main() {
-		log.SetFlags(log.Lshortfile | log.LstdFlags)
-       MicroService.Start()
-    }
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
+	MicroService.Start()
+}
