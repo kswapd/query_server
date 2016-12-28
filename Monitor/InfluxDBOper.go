@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	MyDB = "mydb"
+	MyDB = "containerdb"
 	//username = "bubba"
 	//password = "bumblebeetuna"
 )
@@ -15,7 +15,7 @@ const (
 // queryDB convenience function to query the database
 func QueryDB(cmd string) (ret []client.Result) {
 	c, err := client.NewHTTPClient(client.HTTPConfig{
-		Addr: "http://223.202.32.56:8086",
+		Addr: "http://54.223.73.138:8086",
 	})
 
 	if err != nil {
