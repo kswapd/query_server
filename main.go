@@ -1,12 +1,11 @@
 package main
 
 import (
-    "MicroService"
-    "log"
+	"MicroService"
+	"log"
 )
 
-
 func main() {
-		log.SetFlags(log.Lshortfile | log.LstdFlags)
-       MicroService.Start()
-    }
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
+	MicroService.Start()
+}

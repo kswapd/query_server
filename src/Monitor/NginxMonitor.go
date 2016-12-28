@@ -1,64 +1,51 @@
 package Monitor
 
 import (
-	//"Common"
+	//	"common"
 	"encoding/json"
 	"fmt"
 	"strconv"
 
-	//	"github.com/gin-gonic/gin"
+	//"github.com/gin-gonic/gin"
 	"github.com/influxdata/influxdb/client/v2"
 )
 
-//func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson) {
-//	//确定app type：redis？Nginx？mysql？
-//	measurementsForConfirmAppType := "connections_total,active_connections,uptime_in_seconds"
-//	cmdForConfirmAppType := queryCMDFinal(measurementsForConfirmAppType, queryInfon, "*")
-//	retForConfirmAppType := QueryDB(cmdForConfirmAppType)
+////最终命令
+//func queryCMDFinal(measurements string, qp QueryPerformanceJson, functions string) string {
+//	cmd := "SELECT " + functions + " FROM " + measurements
 
-//	indexOfType := indexOf(retForConfirmAppType[0].Series[0].Columns, "type")
-//	appType := retForConfirmAppType[0].Series[0].Values[0][indexOfType]
+//	cmd += fmt.Sprintf(" WHERE \"container_uuid\"='%s' AND ", qp.Container_uuid)
+//	cmd += fmt.Sprintf("\"environment_id\"='%s' AND ", qp.Environment_id)
+//	//cmd += fmt.Sprintf("time>='%s' AND time<='%s' GROUP BY time(%s)", qp.Start_time, qp.End_time, qp.Time_step)
+//	cmd += fmt.Sprintf("time>='%s' AND time<='%s'", qp.Start_time, qp.End_time)
 
-//	//确定measurements
-//	var measurements string
-//	switch appType {
-//	case "redis":
-//		{
-//			measurements = commandMeasurementsRedis()
-//		}
-//	case "nginx":
-//		{
-//			measurements = commandMeasurementsNginx()
-//		}
-//	case "mysql":
-//		{
-//			measurements = commandMeasurementsMySQL()
-//		}
-//	}
+//	//cmd += fmt.Sprintf("limit %d", limit)
+//	return cmd
+//}
+
+//func queryPerformanceHandler(c *gin.Context) {
+//	//存储json格式的查询请求
+//	var queryInfon QueryPerformanceJson
+//	c.BindJSON(&queryInfon)
+
+//	fmt.Println(queryInfon)
+
+//	//json->command
+//	//这里存在冗余的查询
+//	//	measurements := commandMeasurementsMySQL()
+//	//	measurements += commandMeasurementsNginx()
+//	measurements := commandMeasurementsRedis()
 
 //	cmd := queryCMDFinal(measurements, queryInfon, "*")
 
 //	//cmd = "select mean(*) from used_memory_rss,used_memory_peak limit 2"
-//	//	fmt.Println(cmd)
+//	fmt.Println(cmd)
 
 //	ret := QueryDB(cmd)
 
-//	//	fmt.Println(ret)
+//	fmt.Println(ret)
 //	//聚合查询结果
-//	switch appType {
-//	case "redis":
-//		{
-//			res := parseRedisResult(ret)
-//		}
-//	case "nginx":
-//		{
-//			res := parseNginxResult(ret)
-//		}
-//	case "mysql":
-//		{
-//			res := parseMySQLResult(ret)
-//		}
-//	}
+//	res := parseRedisResult(ret)
 
 //	//注：这里应该从查询结果中提取相应字段值更合适
 //	res.Type = queryInfon.Query_type
@@ -68,7 +55,7 @@ import (
 //	c.JSON(200, res)
 //}
 
-func parseRedisResult(res []client.Result) AppRedisJson {
+func parseNginxResult(res []client.Result) AppRedisJson {
 	var appRedisJson AppRedisJson
 	redisResult := make(map[string]map[string]float64)
 
@@ -237,9 +224,9 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 				}
 			}
 			timeStat[k1] = info
+
 		}
 	}
-
 	var tmp []AppRedisStatsJson
 
 	for _, v := range timeStat {
@@ -247,42 +234,14 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 	}
 	appRedisJson.Data.Stats = tmp
 
-	//container_uuid
-	indexOfUuid := indexOf(res[0].Series[0].Columns, "container_uuid")
-	//	fmt.Println(indexOfUuid)
-	appRedisJson.Data.Container_uuid = res[0].Series[0].Values[0][indexOfUuid].(string)
-	//	fmt.Println(appRedisJson.Data.Container_uuid)
-
-	//environment_id
-	indexOfId := indexOf(res[0].Series[0].Columns, "environment_id")
-	appRedisJson.Data.Environment_id = res[0].Series[0].Values[0][indexOfId].(string)
-
-	//container_name
-	indexOfName := indexOf(res[0].Series[0].Columns, "container_name")
-	//	fmt.Println(indexOfName)
-	appRedisJson.Data.Container_name = res[0].Series[0].Values[0][indexOfName].(string)
-
-	//namespace
-	indexOfNamespace := indexOf(res[0].Series[0].Columns, "namespace")
-	appRedisJson.Data.Namespace = res[0].Series[0].Values[0][indexOfNamespace].(string)
-
-	//type
-	//	indexOfType := indexOf(res[0].Series[0].Columns, "type")
-	//	appRedisJson.Data.Container_uuid = res[0].Series[0].Values[0][indexOfType].(string)
-
-	//	fmt.Println(appRedisJson.Data.Container_name)
-	//	fmt.Println(appRedisJson.Data.Container_uuid)
-	//	fmt.Println(appRedisJson.Data.Environment_id)
-	//	fmt.Println(appRedisJson.Data.Namespace)
-
 	return appRedisJson
 }
 
-func indexOf(strs []string, dst string) int {
-	for k, v := range strs {
-		if v == dst {
-			return k
-		}
-	}
-	return -1 //未找到dst，返回-1
-}
+//func indexOf(strs []string, dst string) int {
+//	for k, v := range strs {
+//		if v == dst {
+//			return k
+//		}
+//	}
+//	return -1 //未找到dst，返回-1
+//}

@@ -2,7 +2,7 @@ package Monitor
 
 import (
 	"Common"
-	"fmt"
+	//	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ func QueryMonitorInfo(c *gin.Context) {
 
 	c.BindJSON(&queryInfo)
 
-	fmt.Println(queryInfo)
+	//fmt.Println(queryInfo)
 
 	switch queryInfo.Query_type {
 	case "container":
@@ -29,7 +29,7 @@ func QueryMonitorInfo(c *gin.Context) {
 		break
 	case "app":
 		//QueryAppMonitorInfo(c, queryInfo)
-		queryPerformanceHandler(c)
+		queryPerformanceHandler(c, queryInfo)
 		break
 	default:
 		log.Fatalln("Error, invalid query type.")
