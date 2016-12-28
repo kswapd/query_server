@@ -129,24 +129,24 @@ type AppMySQLJson struct {
 }
 
 type AppNginxStatsJson struct {
-	Timestamp          string `json:"timestamp"`
-	Active_connections int    `json:"active_connections"`
-	Accepts            int    `json:"accepts"`
-	Handled            int    `json:"handled"`
-	Requests           int    `json:"requests"`
-	Reading            int    `json:"reading"`
-	Writing            int    `json:"writing"`
-	Waiting            int    `json:"waiting"`
+	Timestamp          string  `json:"timestamp"`
+	Active_connections float64 `json:"active_connections"`
+	Accepts            float64 `json:"accepts"`
+	Handled            float64 `json:"handled"`
+	Requests           float64 `json:"requests"`
+	Reading            float64 `json:"reading"`
+	Writing            float64 `json:"writing"`
+	Waiting            float64 `json:"waiting"`
 }
 
 type AppNginxJson struct {
 	Type string `json:"type"`
 	Data struct {
-		Container_uuid string         `json:"container_uuid"`
-		Environment_id string         `json:"environment_id"`
-		Container_name string         `json:"container_name"`
-		Namespace      string         `json:"namespace"`
-		Stats          []AppNginxJson `json:"stats"`
+		Container_uuid string              `json:"container_uuid"`
+		Environment_id string              `json:"environment_id"`
+		Container_name string              `json:"container_name"`
+		Namespace      string              `json:"namespace"`
+		Stats          []AppNginxStatsJson `json:"stats"`
 	} `json:"data"`
 }
 
