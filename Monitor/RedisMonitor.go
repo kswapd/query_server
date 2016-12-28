@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-		"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/influxdata/influxdb/client/v2"
 )
 
