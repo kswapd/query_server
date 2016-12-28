@@ -81,7 +81,7 @@ type QueryMonitorUnit struct {
     }
 
 type QueryContainerMonitor struct {
-  Return_code string `json:"return_code"`
+  Return_code int `json:"return_code"`
   Query_result [] QueryMonitorUnit `json:"query_result"`
 }
 

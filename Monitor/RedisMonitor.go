@@ -4,11 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-
-<<<<<<< HEAD
-	"github.com/gin-gonic/gin"
-=======
->>>>>>> 8f25a88347ae5d91d97d5878b4dd7bab27c4c8a9
 	"github.com/influxdata/influxdb/client/v2"
 )
 

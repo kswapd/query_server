@@ -23,7 +23,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	const InfluxTimeFormat = "2006-01-02T15:04:05.999Z"
 
 	var containerMonitor QueryContainerMonitor
-	containerMonitor.Return_code = "200"
+	containerMonitor.Return_code = 200
 	//var err error
 	//MetricsName-->TimeStamp-->value
 	timeNameStatResult := make(map[string]map[string]int)
@@ -68,7 +68,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 		monitorResult.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][4])
 	}else{
 		c.JSON(200, gin.H{
-            "return_code":  "400",
+            "return_code":  400,
             "err_info":"query not found",
         })
         return 
