@@ -1,7 +1,7 @@
 package Monitor
 
 import (
-	//	"fmt"
+	"fmt"
 	"log"
 	"query_server/Common"
 
@@ -16,10 +16,16 @@ func QueryAppMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson) {
 }
 */
 func QueryMonitorInfo(c *gin.Context) {
-
 	var queryInfo Common.QueryMonitorJson
+	queryInfo.Container_uuid = c.Query("container_uuid")
+	queryInfo.End_time = c.Query("end_time")
+	queryInfo.Environment_id = c.Query("environment_id")
+	queryInfo.Query_type = c.Query("query_type")
+	queryInfo.Start_time = c.Query("start_time")
+	queryInfo.Time_step = c.Query("time_step")
 
-	c.BindJSON(&queryInfo)
+	fmt.Println(queryInfo)
+	//	c.BindJSON(&queryInfo)
 
 	//fmt.Println(queryInfo)
 
