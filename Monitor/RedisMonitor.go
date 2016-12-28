@@ -1,16 +1,19 @@
 package Monitor
 
 import (
-	//"Common"
+	"query_server/Common"
 	"encoding/json"
 	"fmt"
 	"strconv"
 
-	//	"github.com/gin-gonic/gin"
+		"github.com/gin-gonic/gin"
 	"github.com/influxdata/influxdb/client/v2"
 )
 
-//func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson) {
+
+
+
+func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson) {
 //	//确定app type：redis？Nginx？mysql？
 //	measurementsForConfirmAppType := "connections_total,active_connections,uptime_in_seconds"
 //	cmdForConfirmAppType := queryCMDFinal(measurementsForConfirmAppType, queryInfon, "*")
@@ -66,7 +69,7 @@ import (
 //	res.Data.Environment_id = queryInfon.Environment_id
 
 //	c.JSON(200, res)
-//}
+}
 
 func parseRedisResult(res []client.Result) AppRedisJson {
 	var appRedisJson AppRedisJson

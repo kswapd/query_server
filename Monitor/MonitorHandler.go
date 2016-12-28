@@ -2,7 +2,6 @@ package Monitor
 
 import (
 	"query_server/Common"
-	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
