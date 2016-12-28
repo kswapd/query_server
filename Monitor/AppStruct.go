@@ -90,31 +90,31 @@ type QueryPerformanceJson struct {
 app
 */
 type AppMySQLStatsInfo struct {
-	Timestamp                                     string `json:"timestamp"`
-	Connections_total                             int    `json:"connection_total"`
-	Command_query_total                           int    `json:"command_query_total"`
-	Command_insert_total                          int    `json:"command_insert_total"`
-	Command_update_total                          int    `json:"command_update_total"`
-	Command_delete_total                          int    `json:"command_delete_total"`
-	Commands_total                                int    `json:"commands_total"`
-	Handlers_total                                int    `json:"handlers_total"`
-	Connection_errors_total                       int    `json:"connection_errors_total"`
-	Buffer_pool_pages                             int    `json:"buffer_pool_pages"`
-	Thread_connected                              int    `json:"thread_connected"`
-	Max_connections                               int    `json:"max_connections"`
-	Query_response_time_seconds                   int    `json:"query_reponse_time_seconds"`
-	Read_query_response_time_seconds              int    `json:"read_query_response_time"`
-	Write_query_response_time_seconds             int    `json:"write_query_response_time_seconds"`
-	Queries_inside_innodb                         int    `json:"queries_inside_innodb"`
-	Queries_in_queue                              int    `json:"queries_in_queue"`
-	Read_views_open_inside_innodb                 int    `json:"read_views_open_inside_innodb"`
-	Table_statistics_rows_read_total              int    `json:"table_statistics_rows_read_total"`
-	Table_statistics_rows_changed_total           int    `json:"table_statistics_rows_changed_total"`
-	Table_statistics_rows_changed_x_indexes_total int    `json:"table_statistics_rows_changed_x_indexes_total"`
-	Qql_lock_waits_total                          int    `json:"sql_lock_waits_total"`
-	External_lock_waits_total                     int    `json:"external_lock_waits_total"`
-	Table_io_waits_total                          int    `json:"table_io_waits_total"`
-	Table_io_waits_seconds_total                  int    `json:"table_io_waits_seconds_total"`
+	Timestamp                                     string  `json:"timestamp"`
+	Connections_total                             float64 `json:"connection_total"`
+	Command_query_total                           float64 `json:"command_query_total"`
+	Command_insert_total                          float64 `json:"command_insert_total"`
+	Command_update_total                          float64 `json:"command_update_total"`
+	Command_delete_total                          float64 `json:"command_delete_total"`
+	Commands_total                                float64 `json:"commands_total"`
+	Handlers_total                                float64 `json:"handlers_total"`
+	Connection_errors_total                       float64 `json:"connection_errors_total"`
+	Buffer_pool_pages                             float64 `json:"buffer_pool_pages"`
+	Thread_connected                              float64 `json:"thread_connected"`
+	Max_connections                               float64 `json:"max_connections"`
+	Query_response_time_seconds                   float64 `json:"query_reponse_time_seconds"`
+	Read_query_response_time_seconds              float64 `json:"read_query_response_time"`
+	Write_query_response_time_seconds             float64 `json:"write_query_response_time_seconds"`
+	Queries_inside_innodb                         float64 `json:"queries_inside_innodb"`
+	Queries_in_queue                              float64 `json:"queries_in_queue"`
+	Read_views_open_inside_innodb                 float64 `json:"read_views_open_inside_innodb"`
+	Table_statistics_rows_read_total              float64 `json:"table_statistics_rows_read_total"`
+	Table_statistics_rows_changed_total           float64 `json:"table_statistics_rows_changed_total"`
+	Table_statistics_rows_changed_x_indexes_total float64 `json:"table_statistics_rows_changed_x_indexes_total"`
+	Sql_lock_waits_total                          float64 `json:"sql_lock_waits_total"`
+	External_lock_waits_total                     float64 `json:"external_lock_waits_total"`
+	Table_io_waits_total                          float64 `json:"table_io_waits_total"`
+	Table_io_waits_seconds_total                  float64 `json:"table_io_waits_seconds_total"`
 }
 
 type AppMySQLJson struct {
@@ -129,24 +129,24 @@ type AppMySQLJson struct {
 }
 
 type AppNginxStatsJson struct {
-	Timestamp          string `json:"timestamp"`
-	Active_connections int    `json:"active_connections"`
-	Accepts            int    `json:"accepts"`
-	Handled            int    `json:"handled"`
-	Requests           int    `json:"requests"`
-	Reading            int    `json:"reading"`
-	Writing            int    `json:"writing"`
-	Waiting            int    `json:"waiting"`
+	Timestamp          string  `json:"timestamp"`
+	Active_connections float64 `json:"active_connections"`
+	Accepts            float64 `json:"accepts"`
+	Handled            float64 `json:"handled"`
+	Requests           float64 `json:"requests"`
+	Reading            float64 `json:"reading"`
+	Writing            float64 `json:"writing"`
+	Waiting            float64 `json:"waiting"`
 }
 
 type AppNginxJson struct {
 	Type string `json:"type"`
 	Data struct {
-		Container_uuid string         `json:"container_uuid"`
-		Environment_id string         `json:"environment_id"`
-		Container_name string         `json:"container_name"`
-		Namespace      string         `json:"namespace"`
-		Stats          []AppNginxJson `json:"stats"`
+		Container_uuid string              `json:"container_uuid"`
+		Environment_id string              `json:"environment_id"`
+		Container_name string              `json:"container_name"`
+		Namespace      string              `json:"namespace"`
+		Stats          []AppNginxStatsJson `json:"stats"`
 	} `json:"data"`
 }
 

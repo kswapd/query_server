@@ -1,75 +1,16 @@
 package Monitor
 
 import (
-	"query_server/Common"
 	"encoding/json"
 	"fmt"
 	"strconv"
 
+<<<<<<< HEAD
 	"github.com/gin-gonic/gin"
+=======
+>>>>>>> 8f25a88347ae5d91d97d5878b4dd7bab27c4c8a9
 	"github.com/influxdata/influxdb/client/v2"
 )
-
-
-
-
-func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson) {
-//	//确定app type：redis？Nginx？mysql？
-//	measurementsForConfirmAppType := "connections_total,active_connections,uptime_in_seconds"
-//	cmdForConfirmAppType := queryCMDFinal(measurementsForConfirmAppType, queryInfon, "*")
-//	retForConfirmAppType := QueryDB(cmdForConfirmAppType)
-
-//	indexOfType := indexOf(retForConfirmAppType[0].Series[0].Columns, "type")
-//	appType := retForConfirmAppType[0].Series[0].Values[0][indexOfType]
-
-//	//确定measurements
-//	var measurements string
-//	switch appType {
-//	case "redis":
-//		{
-//			measurements = commandMeasurementsRedis()
-//		}
-//	case "nginx":
-//		{
-//			measurements = commandMeasurementsNginx()
-//		}
-//	case "mysql":
-//		{
-//			measurements = commandMeasurementsMySQL()
-//		}
-//	}
-
-//	cmd := queryCMDFinal(measurements, queryInfon, "*")
-
-//	//cmd = "select mean(*) from used_memory_rss,used_memory_peak limit 2"
-//	//	fmt.Println(cmd)
-
-//	ret := QueryDB(cmd)
-
-//	//	fmt.Println(ret)
-//	//聚合查询结果
-//	switch appType {
-//	case "redis":
-//		{
-//			res := parseRedisResult(ret)
-//		}
-//	case "nginx":
-//		{
-//			res := parseNginxResult(ret)
-//		}
-//	case "mysql":
-//		{
-//			res := parseMySQLResult(ret)
-//		}
-//	}
-
-//	//注：这里应该从查询结果中提取相应字段值更合适
-//	res.Type = queryInfon.Query_type
-//	res.Data.Container_uuid = queryInfon.Container_uuid
-//	res.Data.Environment_id = queryInfon.Environment_id
-
-//	c.JSON(200, res)
-}
 
 func parseRedisResult(res []client.Result) AppRedisJson {
 	var appRedisJson AppRedisJson
@@ -273,19 +214,5 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 	//	indexOfType := indexOf(res[0].Series[0].Columns, "type")
 	//	appRedisJson.Data.Container_uuid = res[0].Series[0].Values[0][indexOfType].(string)
 
-	//	fmt.Println(appRedisJson.Data.Container_name)
-	//	fmt.Println(appRedisJson.Data.Container_uuid)
-	//	fmt.Println(appRedisJson.Data.Environment_id)
-	//	fmt.Println(appRedisJson.Data.Namespace)
-
 	return appRedisJson
-}
-
-func indexOf(strs []string, dst string) int {
-	for k, v := range strs {
-		if v == dst {
-			return k
-		}
-	}
-	return -1 //未找到dst，返回-1
 }

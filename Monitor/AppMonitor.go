@@ -1,7 +1,7 @@
 package Monitor
 
 import (
-	"Common"
+	"query_server/Common"
 	//"encoding/json"
 	"fmt"
 	//"strconv"
@@ -73,7 +73,7 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 		}
 	case "nginx":
 		{
-			res = parseNginxResult(ret)
+			//			res = parseNginxResult(ret)
 		}
 	case "mysql":
 		{
@@ -87,4 +87,13 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 	//	res.Data.Environment_id = queryInfon.Environment_id
 
 	c.JSON(200, res)
+}
+
+func indexOf(strs []string, dst string) int {
+	for k, v := range strs {
+		if v == dst {
+			return k
+		}
+	}
+	return -1 //未找到dst，返回-1
 }
