@@ -165,8 +165,8 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 	appMySQLJson.Data.Namespace = res[0].Series[0].Values[0][indexOfNamespace].(string)
 
 	//type
-	//	indexOfType := indexOf(res[0].Series[0].Columns, "type")
-	//	appRedisJson.Data.Container_uuid = res[0].Series[0].Values[0][indexOfType].(string)
+	indexOfType := indexOf(res[0].Series[0].Columns, "type")
+	appMySQLJson.Type = res[0].Series[0].Values[0][indexOfType].(string)
 
 	return appMySQLJson
 }

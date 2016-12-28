@@ -7,9 +7,7 @@ import (
 )
 
 const (
-	MyDB = "containerdb"
-	//username = "bubba"
-	//password = "bumblebeetuna"
+	MyDB = "appdb"
 )
 
 // queryDB convenience function to query the database

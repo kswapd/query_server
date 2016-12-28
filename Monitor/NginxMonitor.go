@@ -77,9 +77,7 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 
 	//container_uuid
 	indexOfUuid := indexOf(res[0].Series[0].Columns, "container_uuid")
-	//	fmt.Println(indexOfUuid)
 	appNginxJson.Data.Container_uuid = res[0].Series[0].Values[0][indexOfUuid].(string)
-	//	fmt.Println(appRedisJson.Data.Container_uuid)
 
 	//environment_id
 	indexOfId := indexOf(res[0].Series[0].Columns, "environment_id")
@@ -87,7 +85,6 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 
 	//container_name
 	indexOfName := indexOf(res[0].Series[0].Columns, "container_name")
-	//	fmt.Println(indexOfName)
 	appNginxJson.Data.Container_name = res[0].Series[0].Values[0][indexOfName].(string)
 
 	//namespace
@@ -95,8 +92,8 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 	appNginxJson.Data.Namespace = res[0].Series[0].Values[0][indexOfNamespace].(string)
 
 	//type
-	//	indexOfType := indexOf(res[0].Series[0].Columns, "type")
-	//	appRedisJson.Data.Container_uuid = res[0].Series[0].Values[0][indexOfType].(string)
+	indexOfType := indexOf(res[0].Series[0].Columns, "type")
+	appNginxJson.Type = res[0].Series[0].Values[0][indexOfType].(string)
 
 	return appNginxJson
 }

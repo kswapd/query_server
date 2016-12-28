@@ -24,13 +24,23 @@ func queryCMDFinal(measurements string, qp Common.QueryMonitorJson, functions st
 }
 
 func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson) {
+	var res interface{}
 	//确定app type：redis？Nginx？mysql？
 	measurementsForConfirmAppType := "connections_total,active_connections,uptime_in_seconds"
 	cmdForConfirmAppType := queryCMDFinal(measurementsForConfirmAppType, queryInfon, "*")
+
+	//	fmt.Println("for debug", cmdForConfirmAppType)
+
 	retForConfirmAppType := QueryDB(cmdForConfirmAppType)
 
+	//	fmt.Println("debug", retForConfirmAppType)
+	if retForConfirmAppType == nil {
+		c.JSON(400, res)
+		return
+	}
 	indexOfType := indexOf(retForConfirmAppType[0].Series[0].Columns, "type")
 	appType := retForConfirmAppType[0].Series[0].Values[0][indexOfType]
+	fmt.Println(appType)
 	if appType == nil {
 		fmt.Println("app type 未知")
 	} else {
@@ -59,13 +69,13 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 	cmd := queryCMDFinal(measurements, queryInfon, "*")
 
 	//cmd = "select mean(*) from used_memory_rss,used_memory_peak limit 2"
-	fmt.Println(cmd)
+	//	fmt.Println(cmd)
 
 	ret := QueryDB(cmd)
 
 	//	fmt.Println(ret)
 	//聚合查询结果
-	var res interface{}
+
 	switch appType {
 	case "redis":
 		{
@@ -73,18 +83,13 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 		}
 	case "nginx":
 		{
-			//			res = parseNginxResult(ret)
+			res = parseNginxResult(ret)
 		}
 	case "mysql":
 		{
-			//			res = parseMySQLResult(ret)
+			res = parseMySQLResult(ret)
 		}
 	}
-
-	//注：这里应该从查询结果中提取相应字段值更合适
-	//	res.Type = queryInfon.Query_type
-	//	res.Data.Container_uuid = queryInfon.Container_uuid
-	//	res.Data.Environment_id = queryInfon.Environment_id
 
 	c.JSON(200, res)
 }

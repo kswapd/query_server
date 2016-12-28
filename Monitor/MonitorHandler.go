@@ -1,8 +1,9 @@
 package Monitor
 
 import (
-	"query_server/Common"
+	//	"fmt"
 	"log"
+	"query_server/Common"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,6 +29,7 @@ func QueryMonitorInfo(c *gin.Context) {
 		break
 	case "app":
 		//QueryAppMonitorInfo(c, queryInfo)
+		//		fmt.Println(queryInfo)
 		queryPerformanceHandler(c, queryInfo)
 		break
 	default:
