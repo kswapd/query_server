@@ -33,7 +33,7 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 	cmdForConfirmAppType := queryCMDFinal(measurementsForConfirmAppType, queryInfon, Functions_init)
 	cmdForConfirmAppType += " limit 1"
 
-	retForConfirmAppType := QueryDB(cmdForConfirmAppType)
+	retForConfirmAppType := QueryDB(cmdForConfirmAppType, "appdb")
 
 	if len(retForConfirmAppType[0].Series) <= 0 {
 		c.JSON(200, gin.H{
@@ -64,7 +64,14 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 
 	cmd := queryCMDFinal(measurements, queryInfon, "*")
 
+<<<<<<< HEAD
 	ret := QueryDB(cmd)
+=======
+	//cmd = "select mean(*) from used_memory_rss,used_memory_peak limit 2"
+	//	fmt.Println(cmd)
+
+	ret := QueryDB(cmd, "appdb")
+>>>>>>> 0725cfd5117e542f85532784131e10b17dd5f95d
 
 	//聚合查询结果
 	switch appType {
