@@ -57,7 +57,7 @@ if err != nil {
      // fmt.Println(*searchResult)
       fmt.Printf("Query took %d milliseconds\n", searchResult.TookInMillis)
 
-      var t LogContainerJson
+      var t SLogContainer
       if searchResult.Hits.TotalHits > 0 {
         //fmt.Printf("Found a total of %d tweets\n", searchResult.Hits.TotalHits)
 

@@ -1,5 +1,5 @@
 package LogInfo
-type LogContainerJson struct {
+type SLogContainer struct {
         Type  string `json:"type"`
         Data struct {
           Container_uuid string `json:"container_uuid"`
