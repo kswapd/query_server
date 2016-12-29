@@ -161,7 +161,6 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
 				if fsIndex == -1 {
 					info.Data.Stats.Container_filesystem = append(info.Data.Stats.Container_filesystem, fs)
-					//fmt.Printf("%#v.\n",fs);
 				}
 
 				continue
@@ -183,7 +182,6 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
 				if fsIndex == -1{
 					info.Data.Stats.Container_filesystem = append(info.Data.Stats.Container_filesystem, fs)
-					fmt.Printf("%#v.\n",fs);
 				}
 
 				continue
