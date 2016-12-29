@@ -8,21 +8,18 @@ import (
 	"time"
 	"sort"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson) {
 
-	var containerMonitorTag ContainerMonitorTag
 
-	//monitorResult.Return_code = "200"
-	//ret := Monitor.QueryDB("select * from /.*/ limit 10")
+	const RFC3339Nano = "2006-01-02T15:04:05.999999999Z07:00"
+	const MyDB = "containerdb"
+	var containerMonitorTag ContainerMonitorTag
 	var finalTagQuery string
 	var finalMetricQuery string
-	timeStr := ""
-	const TimeFormat = "2006-01-02 15:04:05"
-	const RFC3339Nano = "2006-01-02T15:04:05.999999999Z07:00"
-	const InfluxTimeFormat = "2006-01-02T15:04:05.999Z"
-	const MyDB = "containerdb"
+	
 	var containerMonitor QueryContainerMonitor
 	containerMonitor.Return_code = 200
 
@@ -32,7 +29,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	timeNameStatResult := make(map[string]map[string]int)
 
 	var queryValidation = true
-
+	timeStr := ""
 	startTime, err := time.Parse(RFC3339Nano, queryInfo.Start_time)
 	if err != nil {
 		queryValidation = false
@@ -70,11 +67,11 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	if len(ret[0].Series) > 0 {
 		// monitorResult.
 		containerMonitorTag.Timestamp = fmt.Sprintf("%s", ret[0].Series[0].Values[0][0])
-		containerMonitorTag.Container_uuid = fmt.Sprintf("%s", ret[0].Series[0].Values[0][2])
-		containerMonitorTag.Environment_id = fmt.Sprintf("%s", ret[0].Series[0].Values[0][3])
-		containerMonitorTag.Container_name = fmt.Sprintf("%s", ret[0].Series[0].Values[0][1])
-		containerMonitorTag.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][4])
-		containerMonitorTag.Type = fmt.Sprintf("%s", ret[0].Series[0].Values[0][5])
+		containerMonitorTag.Container_uuid = fmt.Sprintf("%s", ret[0].Series[0].Values[0][3])
+		containerMonitorTag.Environment_id = fmt.Sprintf("%s", ret[0].Series[0].Values[0][4])
+		containerMonitorTag.Container_name = fmt.Sprintf("%s", ret[0].Series[0].Values[0][2])
+		containerMonitorTag.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][6])
+		containerMonitorTag.Type = fmt.Sprintf("%s", ret[0].Series[0].Values[0][8])
 	}else{
 		c.JSON(200, gin.H{
             "return_code":  400,
@@ -103,7 +100,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
 		for valIndex := 0; valIndex < len(se.Values); valIndex++ {
 			timeStr = fmt.Sprintf("%s", se.Values[valIndex][0])
-			valStr := fmt.Sprintf("%s", se.Values[valIndex][1])
+			valStr := fmt.Sprintf("%s", se.Values[valIndex][2])
 			val, err := strconv.Atoi(valStr)
 			_ = err
 			//fmt.Printf("%d :%s,%s,%s\n", index, se.Name, se.Values[valIndex][28], se.Values[valIndex][0])
@@ -140,7 +137,61 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 				//time.Unix(0, intNanoTime).Format(RFC3339Nano)
 				//t := time.SecondsToLocalTime(1305861602)
 			}
+
 			info := timeStat[k1]
+
+
+			var fs ContainerFileSystem
+			fsIndex := -1
+			
+			//fmt.Println(k)
+			if strings.Contains(k, "container_filesystem_capacity_"){
+				fs.Container_filesystem_name  = strings.TrimPrefix(k, "container_filesystem_capacity_")
+            	fs.Container_filesystem_type  = "default"
+              	fs.Container_filesystem_capacity = val
+
+				for i, _ := range info.Data.Stats.Container_filesystem {
+					if info.Data.Stats.Container_filesystem[i].Container_filesystem_name == fs.Container_filesystem_name {
+						fsIndex = i
+	              	 	info.Data.Stats.Container_filesystem[i].Container_filesystem_type = fs.Container_filesystem_type 
+	              	 	info.Data.Stats.Container_filesystem[i].Container_filesystem_capacity = fs.Container_filesystem_capacity
+						break
+					}
+				}
+
+				if fsIndex == -1 {
+					info.Data.Stats.Container_filesystem = append(info.Data.Stats.Container_filesystem, fs)
+					//fmt.Printf("%#v.\n",fs);
+				}
+
+				continue
+				 
+			}else if strings.Contains(k, "container_filesystem_usage_"){
+
+				 fs.Container_filesystem_name  = strings.TrimPrefix(k, "container_filesystem_usage_")
+              	 fs.Container_filesystem_type  = "default"
+				 fs.Container_filesystem_usage = val
+
+				 for i, _ := range info.Data.Stats.Container_filesystem {
+					if info.Data.Stats.Container_filesystem[i].Container_filesystem_name == fs.Container_filesystem_name {
+						fsIndex = i
+	              	 	info.Data.Stats.Container_filesystem[i].Container_filesystem_type = fs.Container_filesystem_type 
+	              	 	info.Data.Stats.Container_filesystem[i].Container_filesystem_usage = fs.Container_filesystem_usage
+						break
+					}
+				}
+
+				if fsIndex == -1{
+					info.Data.Stats.Container_filesystem = append(info.Data.Stats.Container_filesystem, fs)
+					fmt.Printf("%#v.\n",fs);
+				}
+
+				continue
+
+			}
+
+			
+
 			switch k {
 			case "cpu_usage_per_cpu":
 				//StatsInfo.Container_cpu_usage_seconds_total =

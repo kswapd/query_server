@@ -15,7 +15,12 @@ type ContainerJson struct {
         }  `json:"data"`
     }
 
-
+type ContainerFileSystem struct {
+              Container_filesystem_name string `json:"container_filesystem_name"`
+              Container_filesystem_type string `json:"container_filesystem_type"`
+              Container_filesystem_capacity int `json:"container_filesystem_capacity"`
+              Container_filesystem_usage int `json:"container_filesystem_usage"`
+} 
 
 type StatsInfo struct {
           //Timestamp string `json:"timestamp"`
@@ -35,13 +40,7 @@ type StatsInfo struct {
           Container_network_transmit_packets_total int `json:"container_network_transmit_packets_total"`
           Container_network_transmit_packets_dropped_total int `json:"container_network_transmit_packets_dropped_total"`
           Container_network_transmit_errors_total int `json:"container_network_transmit_errors_total"`
-           Container_filesystem [] struct 
-            {
-              Container_filesystem_name string `json:"container_filesystem_name"`
-              Container_filesystem_type string `json:"container_filesystem_type"`
-              Container_filesystem_capacity int `json:"container_filesystem_capacity"`
-              Container_filesystem_usage int `json:"container_filesystem_usage"`
-            }  `json:"container_filesystem"`
+          Container_filesystem []  ContainerFileSystem `json:"container_filesystem"`
           
           Container_diskio_service_bytes_async int `json:"container_diskio_service_bytes_async"`
           Container_diskio_service_bytes_read int `json:"container_diskio_service_bytes_read"`
