@@ -57,13 +57,13 @@ type StatsInfo struct {
 
 
 
-type QueryMonitorResultJson struct {
+type ContainerMonitorTag struct {
       Timestamp string `json:"timestamp"`
       Container_uuid string `json:"container_uuid"`
       Environment_id string `json:"environment_id"`
       Container_name string `json:"container_name"`
       Namespace string `json:"namespace"`
-       Stats []StatsInfo  `json:"stats"`
+      Type string `json:"type"`
     }
 
 
