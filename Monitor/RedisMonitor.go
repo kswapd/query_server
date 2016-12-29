@@ -8,14 +8,15 @@ import (
 	"github.com/influxdata/influxdb/client/v2"
 )
 
+//原理参照nginx
 func parseRedisResult(res []client.Result) AppRedisJson {
 	var appRedisJson AppRedisJson
 	redisResult := make(map[string]map[string]float64)
 
 	//遍历res，取出结果
 	for _, v := range res[0].Series {
-		redisResult[v.Name] = make(map[string]float64) //map[time]value
-		index := indexOf(v.Columns, "value")           //哪个位置存储value
+		redisResult[v.Name] = make(map[string]float64)
+		index := indexOf(v.Columns, "value")
 
 		for _, v1 := range v.Values {
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
@@ -182,9 +183,7 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 
 	//container_uuid
 	indexOfUuid := indexOf(res[0].Series[0].Columns, "container_uuid")
-	//	fmt.Println(indexOfUuid)
 	container_uuid := res[0].Series[0].Values[0][indexOfUuid].(string)
-	//	fmt.Println(appRedisJson.Data.Container_uuid)
 
 	//environment_id
 	indexOfId := indexOf(res[0].Series[0].Columns, "environment_id")
@@ -192,7 +191,6 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 
 	//container_name
 	indexOfName := indexOf(res[0].Series[0].Columns, "container_name")
-	//	fmt.Println(indexOfName)
 	container_name := res[0].Series[0].Values[0][indexOfName].(string)
 
 	//namespace
@@ -202,13 +200,6 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 	//type
 	indexOfType := indexOf(res[0].Series[0].Columns, "type")
 	appType := res[0].Series[0].Values[0][indexOfType].(string)
-
-	//	var tmp []AppRedisStatsJson
-
-	//	for _, v := range timeStat {
-	//		tmp = append(tmp, v)
-	//	}
-	//	appRedisJson.Data.Stats = tmp
 
 	var arqr []AppRedisQueryResult
 	for _, v := range timeStat {

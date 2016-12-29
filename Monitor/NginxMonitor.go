@@ -10,12 +10,12 @@ import (
 
 func parseNginxResult(res []client.Result) AppNginxJson {
 	var appNginxJson AppNginxJson
-	nginxResult := make(map[string]map[string]float64)
+	nginxResult := make(map[string]map[string]float64) //map["measurement"]map["time"]float64
 
 	//遍历res，取出结果
 	for _, v := range res[0].Series {
 		nginxResult[v.Name] = make(map[string]float64) //map[time]value
-		index := indexOf(v.Columns, "value")           //哪个位置存储value
+		index := indexOf(v.Columns, "value")           //index指定value存储位置
 
 		for _, v1 := range v.Values {
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
@@ -23,7 +23,7 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 		}
 	}
 
-	timeStat := make(map[string]AppNginxStatsJson)
+	timeStat := make(map[string]AppNginxStatsJson) //map["time"]AppNginxStatsJson
 
 	for k, v := range nginxResult {
 		for k1, val := range v {
@@ -70,9 +70,7 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 
 	//container_uuid
 	indexOfUuid := indexOf(res[0].Series[0].Columns, "container_uuid")
-	//	fmt.Println(indexOfUuid)
 	container_uuid := res[0].Series[0].Values[0][indexOfUuid].(string)
-	//	fmt.Println(appRedisJson.Data.Container_uuid)
 
 	//environment_id
 	indexOfId := indexOf(res[0].Series[0].Columns, "environment_id")
@@ -80,7 +78,6 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 
 	//container_name
 	indexOfName := indexOf(res[0].Series[0].Columns, "container_name")
-	//	fmt.Println(indexOfName)
 	container_name := res[0].Series[0].Values[0][indexOfName].(string)
 
 	//namespace
@@ -91,33 +88,7 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 	indexOfType := indexOf(res[0].Series[0].Columns, "type")
 	appType := res[0].Series[0].Values[0][indexOfType].(string)
 
-	//	var tmp []AppNginxStatsJson
-
-	//	for _, v := range timeStat {
-	//		tmp = append(tmp, v)
-	//	}
-	//	appNginxJson.Data.Stats = tmp
-
-	//	//container_uuid
-	//	indexOfUuid := indexOf(res[0].Series[0].Columns, "container_uuid")
-	//	appNginxJson.Data.Container_uuid = res[0].Series[0].Values[0][indexOfUuid].(string)
-
-	//	//environment_id
-	//	indexOfId := indexOf(res[0].Series[0].Columns, "environment_id")
-	//	appNginxJson.Data.Environment_id = res[0].Series[0].Values[0][indexOfId].(string)
-
-	//	//container_name
-	//	indexOfName := indexOf(res[0].Series[0].Columns, "container_name")
-	//	appNginxJson.Data.Container_name = res[0].Series[0].Values[0][indexOfName].(string)
-
-	//	//namespace
-	//	indexOfNamespace := indexOf(res[0].Series[0].Columns, "namespace")
-	//	appNginxJson.Data.Namespace = res[0].Series[0].Values[0][indexOfNamespace].(string)
-
-	//	//type
-	//	indexOfType := indexOf(res[0].Series[0].Columns, "type")
-	//	appNginxJson.Type = res[0].Series[0].Values[0][indexOfType].(string)
-
+	//向目标结构字段添加值
 	var anqr []AppNginxQueryResult
 	for _, v := range timeStat {
 		var qrd AppNginxQueryResultData

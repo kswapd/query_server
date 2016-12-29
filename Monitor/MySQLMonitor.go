@@ -8,14 +8,16 @@ import (
 	"github.com/influxdata/influxdb/client/v2"
 )
 
+//原理参照nginx
 func parseMySQLResult(res []client.Result) AppMySQLJson {
+
 	var appMySQLJson AppMySQLJson
 	mysqlResult := make(map[string]map[string]float64)
 
 	//遍历res，取出结果
 	for _, v := range res[0].Series {
-		mysqlResult[v.Name] = make(map[string]float64) //map[time]value
-		index := indexOf(v.Columns, "value")           //哪个位置存储value
+		mysqlResult[v.Name] = make(map[string]float64)
+		index := indexOf(v.Columns, "value")
 
 		for _, v1 := range v.Values {
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
@@ -59,7 +61,6 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 				{
 					info.Handlers_total = val
 				}
-
 			case "connection_errors_total":
 				{
 					info.Connection_errors_total = val
@@ -140,9 +141,7 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 
 	//container_uuid
 	indexOfUuid := indexOf(res[0].Series[0].Columns, "container_uuid")
-	//	fmt.Println(indexOfUuid)
 	container_uuid := res[0].Series[0].Values[0][indexOfUuid].(string)
-	//	fmt.Println(appRedisJson.Data.Container_uuid)
 
 	//environment_id
 	indexOfId := indexOf(res[0].Series[0].Columns, "environment_id")
@@ -150,7 +149,6 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 
 	//container_name
 	indexOfName := indexOf(res[0].Series[0].Columns, "container_name")
-	//	fmt.Println(indexOfName)
 	container_name := res[0].Series[0].Values[0][indexOfName].(string)
 
 	//namespace
@@ -160,12 +158,6 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 	//type
 	indexOfType := indexOf(res[0].Series[0].Columns, "type")
 	appType := res[0].Series[0].Values[0][indexOfType].(string)
-
-	//	var tmp []AppMySQLStatsJson
-
-	//	for _, v := range timeStat {
-	//		tmp = append(tmp, v)
-	//	}
 
 	var amqr []AppMySQLQueryResult
 	for _, v := range timeStat {
@@ -186,7 +178,6 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 
 	appMySQLJson.Query_result = amqr
 	appMySQLJson.Return_code = 200
-	//	appMySQLJson.Data.Stats = tmp
 
 	return appMySQLJson
 }
