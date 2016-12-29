@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+
 	"github.com/influxdata/influxdb/client/v2"
 )
 
@@ -179,35 +180,55 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 		}
 	}
 
-	var tmp []AppRedisStatsJson
-
-	for _, v := range timeStat {
-		tmp = append(tmp, v)
-	}
-	appRedisJson.Data.Stats = tmp
-
 	//container_uuid
 	indexOfUuid := indexOf(res[0].Series[0].Columns, "container_uuid")
 	//	fmt.Println(indexOfUuid)
-	appRedisJson.Data.Container_uuid = res[0].Series[0].Values[0][indexOfUuid].(string)
+	container_uuid := res[0].Series[0].Values[0][indexOfUuid].(string)
 	//	fmt.Println(appRedisJson.Data.Container_uuid)
 
 	//environment_id
 	indexOfId := indexOf(res[0].Series[0].Columns, "environment_id")
-	appRedisJson.Data.Environment_id = res[0].Series[0].Values[0][indexOfId].(string)
+	environment_id := res[0].Series[0].Values[0][indexOfId].(string)
 
 	//container_name
 	indexOfName := indexOf(res[0].Series[0].Columns, "container_name")
 	//	fmt.Println(indexOfName)
-	appRedisJson.Data.Container_name = res[0].Series[0].Values[0][indexOfName].(string)
+	container_name := res[0].Series[0].Values[0][indexOfName].(string)
 
 	//namespace
 	indexOfNamespace := indexOf(res[0].Series[0].Columns, "namespace")
-	appRedisJson.Data.Namespace = res[0].Series[0].Values[0][indexOfNamespace].(string)
+	namespace := res[0].Series[0].Values[0][indexOfNamespace].(string)
 
 	//type
 	indexOfType := indexOf(res[0].Series[0].Columns, "type")
-	appRedisJson.Type = res[0].Series[0].Values[0][indexOfType].(string)
+	appType := res[0].Series[0].Values[0][indexOfType].(string)
+
+	//	var tmp []AppRedisStatsJson
+
+	//	for _, v := range timeStat {
+	//		tmp = append(tmp, v)
+	//	}
+	//	appRedisJson.Data.Stats = tmp
+
+	var arqr []AppRedisQueryResult
+	for _, v := range timeStat {
+		var qrd AppRedisQueryResultData
+		qrd.Stats = v
+		qrd.Timestamp = v.Timestamp
+		qrd.Container_name = container_name
+		qrd.Container_uuid = container_uuid
+		qrd.Environment_id = environment_id
+		qrd.Nmespace = namespace
+
+		var mqr AppRedisQueryResult
+		mqr.Data = qrd
+		mqr.Type = appType
+
+		arqr = append(arqr, mqr)
+	}
+
+	appRedisJson.Query_result = arqr
+	appRedisJson.Return_code = 200
 
 	return appRedisJson
 }

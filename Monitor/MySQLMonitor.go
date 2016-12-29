@@ -168,7 +168,7 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 	//	}
 
 	var amqr []AppMySQLQueryResult
-	for k, v := range timeStat {
+	for _, v := range timeStat {
 		var qrd AppMySQLQueryResultData
 		qrd.Stats = v
 		qrd.Timestamp = v.Timestamp
