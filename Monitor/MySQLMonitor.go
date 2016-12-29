@@ -10,22 +10,22 @@ import (
 
 func parseMySQLResult(res []client.Result) AppMySQLJson {
 	var appMySQLJson AppMySQLJson
-	mysqlxResult := make(map[string]map[string]float64)
+	mysqlResult := make(map[string]map[string]float64)
 
 	//遍历res，取出结果
 	for _, v := range res[0].Series {
-		mysqlxResult[v.Name] = make(map[string]float64) //map[time]value
-		index := indexOf(v.Columns, "value")            //哪个位置存储value
+		mysqlResult[v.Name] = make(map[string]float64) //map[time]value
+		index := indexOf(v.Columns, "value")           //哪个位置存储value
 
 		for _, v1 := range v.Values {
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
-			mysqlxResult[v.Name][v1[0].(string)] = f64
+			mysqlResult[v.Name][v1[0].(string)] = f64
 		}
 	}
 
-	timeStat := make(map[string]AppMySQLStatsInfo)
+	timeStat := make(map[string]AppMySQLStatsJson)
 
-	for k, v := range mysqlxResult {
+	for k, v := range mysqlResult {
 		for k1, val := range v {
 			info := timeStat[k1]
 			info.Timestamp = k1
@@ -138,35 +138,55 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 		}
 	}
 
-	var tmp []AppMySQLStatsInfo
-
-	for _, v := range timeStat {
-		tmp = append(tmp, v)
-	}
-	appMySQLJson.Data.Stats = tmp
-
 	//container_uuid
 	indexOfUuid := indexOf(res[0].Series[0].Columns, "container_uuid")
 	//	fmt.Println(indexOfUuid)
-	appMySQLJson.Data.Container_uuid = res[0].Series[0].Values[0][indexOfUuid].(string)
+	container_uuid := res[0].Series[0].Values[0][indexOfUuid].(string)
 	//	fmt.Println(appRedisJson.Data.Container_uuid)
 
 	//environment_id
 	indexOfId := indexOf(res[0].Series[0].Columns, "environment_id")
-	appMySQLJson.Data.Environment_id = res[0].Series[0].Values[0][indexOfId].(string)
+	environment_id := res[0].Series[0].Values[0][indexOfId].(string)
 
 	//container_name
 	indexOfName := indexOf(res[0].Series[0].Columns, "container_name")
 	//	fmt.Println(indexOfName)
-	appMySQLJson.Data.Container_name = res[0].Series[0].Values[0][indexOfName].(string)
+	container_name := res[0].Series[0].Values[0][indexOfName].(string)
 
 	//namespace
 	indexOfNamespace := indexOf(res[0].Series[0].Columns, "namespace")
-	appMySQLJson.Data.Namespace = res[0].Series[0].Values[0][indexOfNamespace].(string)
+	namespace := res[0].Series[0].Values[0][indexOfNamespace].(string)
 
 	//type
 	indexOfType := indexOf(res[0].Series[0].Columns, "type")
-	appMySQLJson.Type = res[0].Series[0].Values[0][indexOfType].(string)
+	appType := res[0].Series[0].Values[0][indexOfType].(string)
+
+	//	var tmp []AppMySQLStatsJson
+
+	//	for _, v := range timeStat {
+	//		tmp = append(tmp, v)
+	//	}
+
+	var amqr []AppMySQLQueryResult
+	for k, v := range timeStat {
+		var qrd AppMySQLQueryResultData
+		qrd.Stats = v
+		qrd.Timestamp = v.Timestamp
+		qrd.Container_name = container_name
+		qrd.Container_uuid = container_uuid
+		qrd.Environment_id = environment_id
+		qrd.Nmespace = namespace
+
+		var mqr AppMySQLQueryResult
+		mqr.Data = qrd
+		mqr.Type = appType
+
+		amqr = append(amqr, mqr)
+	}
+
+	appMySQLJson.Query_result = amqr
+	appMySQLJson.Return_code = 200
+	//	appMySQLJson.Data.Stats = tmp
 
 	return appMySQLJson
 }

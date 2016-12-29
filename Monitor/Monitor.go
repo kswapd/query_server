@@ -18,7 +18,7 @@ type ContainerJson struct {
 
 
 type StatsInfo struct {
-          Timestamp string `json:"timestamp"`
+          //Timestamp string `json:"timestamp"`
           Container_cpu_usage_seconds_total int `json:"container_cpu_usage_seconds_total"`
           Container_cpu_user_seconds_total int `json:"container_cpu_user_seconds_total"`
           Container_cpu_system_seconds_total int `json:"container_cpu_system_seconds_total"`
@@ -67,6 +67,23 @@ type QueryMonitorResultJson struct {
     }
 
 
+
+type QueryMonitorUnit struct {
+      Type  string `json:"type"`
+      Data struct {
+        Timestamp string `json:"timestamp"`
+        Container_uuid string `json:"container_uuid"`
+        Environment_id string `json:"environment_id"`
+        Container_name string `json:"container_name"`
+        Namespace string `json:"namespace"`
+        Stats StatsInfo  `json:"stats"`
+      } `json:"data"`
+    }
+
+type QueryContainerMonitor struct {
+  Return_code int `json:"return_code"`
+  Query_result [] QueryMonitorUnit `json:"query_result"`
+}
 
 
 type LoginCommand struct {

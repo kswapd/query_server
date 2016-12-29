@@ -40,7 +40,7 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 	}
 	indexOfType := indexOf(retForConfirmAppType[0].Series[0].Columns, "type")
 	appType := retForConfirmAppType[0].Series[0].Values[0][indexOfType]
-	fmt.Println(appType)
+	//	fmt.Println(appType)
 	if appType == nil {
 		fmt.Println("app type 未知")
 	} else {
@@ -49,7 +49,7 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 
 	//确定measurements
 	//测试用
-	appType = "redis"
+	//	appType = "redis"
 	var measurements string
 	switch appType {
 	case "redis":

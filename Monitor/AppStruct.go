@@ -5,78 +5,31 @@ import (
 	"strings"
 )
 
-//type ContainerJson struct {
-//	Type string `json:"type"`
-//	Data struct {
-//		Container_uuid string `json:"container_uuid"`
-//		Environment_id string `json:"environment_id"`
-//		Namespace      string `json:"namespace"`
-//		Container_name string `json:"container_name"`
-//		Timestamp      string `json:"timestamp"`
-//		Log_info       struct {
-//			Log_time string `json:"log_time"`
-//			Source   string `json:"source"`
-//			Message  string `json:"message"`
-//		} `json:"log_info"`
-//	} `json:"data"`
+//type framwork struct {
+//	Return_code int `json:"return_code"`
+//	Query_result
 //}
 
-type QueryJson struct {
-	Query_type      string `json:"query_type"`
-	Container_uuid  string `json:"container_uuid"`
-	Environment_id  string `json:"environment_id"`
-	Start_time      string `json:"start_time"`
-	End_time        string `json:"end_time"`
-	Query_content   string `json:"query_content"`
-	Length_per_page int    `json:"length_per_page"`
-	Page_index      int    `json:"page_index"`
-}
+//type Data struct {
+//	Environment_id string        `json:"environment_id"`
+//	Container_name string        `json:"container_name"`
+//	Container_uuid string        `json:"container_uuid"`
+//	Namespace      string        `json:"namespace"`
+//	TimeStamp      string        `json:"timestamp"`
+//	Stats          []interface{} `json:"stats"`
+//}
 
-/*
-type ContainerJson struct {
-	Timestamp      string `json:"timestamp"`
-	Container_uuid string `json:"container_uuid"`
-	Environment_id string `json:"environment_id"`
-	Container_name string `json:"container_name"`
-	Namespace      string `json:"namespace"`
-	Stats          []struct {
-		Timestamp                                        string `json:"timestamp"`
-		Container_cpu_usage_seconds_total                int    `json:"container_cpu_usage_seconds_total"`
-		Container_cpu_user_seconds_total                 int    `json:"container_cpu_user_seconds_total"`
-		Container_cpu_system_seconds_total               int    `json:"container_cpu_system_seconds_total"`
-		Container_memory_usage_bytes                     int    `json:"container_memory_usage_bytes"`
-		Container_memory_limit_bytes                     int    `json:"container_memory_limit_bytes"`
-		Container_memory_cache                           int    `json:"container_memory_cache"`
-		Container_memory_rss                             int    `json:"container_memory_rss"`
-		Container_memory_swap                            int    `json:"container_memory_swap"`
-		Container_network_receive_bytes_total            int    `json:"container_network_receive_bytes_total"`
-		Container_network_receive_packets_total          int    `json:"container_network_receive_packets_total"`
-		Container_network_receive_packets_dropped_total  int    `json:"container_network_receive_packets_dropped_total"`
-		Container_network_receive_errors_total           int    `json:"container_network_receive_errors_total"`
-		Container_network_transmit_bytes_total           int    `json:"container_network_transmit_bytes_total"`
-		Container_network_transmit_packets_total         int    `json:"container_network_transmit_packets_total"`
-		Container_network_transmit_packets_dropped_total int    `json:"container_network_transmit_packets_dropped_total"`
-		Container_network_transmit_errors_total          int    `json:"container_network_transmit_errors_total"`
-		Container_filesystem                             []struct {
-			Container_filesystem_name     string `json:"container_filesystem_name"`
-			Container_filesystem_type     string `json:"container_filesystem_type"`
-			Container_filesystem_capacity int    `json:"container_filesystem_capacity"`
-			Container_filesystem_usage    int    `json:"container_filesystem_usage"`
-		} `json:"container_filesystem"`
+//type QueryJson struct {
+//	Query_type      string `json:"query_type"`
+//	Container_uuid  string `json:"container_uuid"`
+//	Environment_id  string `json:"environment_id"`
+//	Start_time      string `json:"start_time"`
+//	End_time        string `json:"end_time"`
+//	Query_content   string `json:"query_content"`
+//	Length_per_page int    `json:"length_per_page"`
+//	Page_index      int    `json:"page_index"`
+//}
 
-		Container_diskio_service_bytes_async     int `json:"container_diskio_service_bytes_async"`
-		Container_diskio_service_bytes_read      int `json:"container_diskio_service_bytes_read"`
-		Container_diskio_service_bytes_sync      int `json:"container_diskio_service_bytes_sync"`
-		Container_diskio_service_bytes_total     int `json:"container_diskio_service_bytes_total"`
-		Container_diskio_service_bytes_write     int `json:"container_diskio_service_bytes_write"`
-		Container_tasks_state_nr_sleeping        int `json:"container_tasks_state_nr_sleeping"`
-		Container_tasks_state_nr_running         int `json:"container_tasks_state_nr_running"`
-		Container_tasks_state_nr_stopped         int `json:"container_tasks_state_nr_stopped"`
-		Container_tasks_state_nr_uninterruptible int `json:"container_tasks_state_nr_uninterruptible"`
-		Container_tasks_state_nr_io_wait         int `json:"container_tasks_state_nr_io_wait"`
-	} `json:"stats"`
-}
-*/
 type QueryPerformanceJson struct {
 	Query_type     string `json:"query_type"`
 	Container_uuid string `json:"container_uuid"`
@@ -89,7 +42,7 @@ type QueryPerformanceJson struct {
 /*
 app
 */
-type AppMySQLStatsInfo struct {
+type AppMySQLStatsJson struct {
 	Timestamp                                     string  `json:"timestamp"`
 	Connections_total                             float64 `json:"connection_total"`
 	Command_query_total                           float64 `json:"command_query_total"`
@@ -117,15 +70,34 @@ type AppMySQLStatsInfo struct {
 	Table_io_waits_seconds_total                  float64 `json:"table_io_waits_seconds_total"`
 }
 
+//type AppMySQLJson struct {
+//	Type string `json:"type"`
+//	Data struct {
+//		Container_uuid string              `json:"container_uuid"`
+//		Environment_id string              `json:"environment_id"`
+//		Container_name string              `json:"container_name"`
+//		Namespace      string              `json:"namespace"`
+//		Stats          []AppMySQLStatsInfo `json:"stats"`
+//	} `json:"data"`
+//}
+
 type AppMySQLJson struct {
-	Type string `json:"type"`
-	Data struct {
-		Container_uuid string              `json:"container_uuid"`
-		Environment_id string              `json:"environment_id"`
-		Container_name string              `json:"container_name"`
-		Namespace      string              `json:"namespace"`
-		Stats          []AppMySQLStatsInfo `json:"stats"`
-	} `json:"data"`
+	Return_code  int                   `json:"return_code"`
+	Query_result []AppMySQLQueryResult `json:"query_result"`
+}
+
+type AppMySQLQueryResult struct {
+	Type string                  `json:"type"`
+	Data AppMySQLQueryResultData `json:"data"`
+}
+
+type AppMySQLQueryResultData struct {
+	Environment_id string            `json:"environment_id"`
+	Container_name string            `json:"container_name"`
+	Container_uuid string            `json:"container_uuid"`
+	Nmespace       string            `json:"namespace"`
+	Timestamp      string            `json:"timestamp"`
+	Stats          AppMySQLStatsJson `json:"stats"`
 }
 
 type AppNginxStatsJson struct {
@@ -139,30 +111,47 @@ type AppNginxStatsJson struct {
 	Waiting            float64 `json:"waiting"`
 }
 
+//type AppNginxJson struct {
+//	Type string `json:"type"`
+//	Data struct {
+//		Container_uuid string              `json:"container_uuid"`
+//		Environment_id string              `json:"environment_id"`
+//		Container_name string              `json:"container_name"`
+//		Namespace      string              `json:"namespace"`
+//		Stats          []AppNginxStatsJson `json:"stats"`
+//	} `json:"data"`
+//}
+
 type AppNginxJson struct {
-	Type string `json:"type"`
-	Data struct {
-		Container_uuid string              `json:"container_uuid"`
-		Environment_id string              `json:"environment_id"`
-		Container_name string              `json:"container_name"`
-		Namespace      string              `json:"namespace"`
-		Stats          []AppNginxStatsJson `json:"stats"`
-	} `json:"data"`
+	Return_code  int                   `json:"return_code"`
+	Query_result []AppNginxQueryResult `json:"query_result"`
+}
+
+type AppNginxQueryResult struct {
+	Type string                  `json:"type"`
+	Data AppNginxQueryResultData `json:"data"`
+}
+
+type AppNginxQueryResultData struct {
+	Environment_id string            `json:"environment_id"`
+	Container_name string            `json:"container_name"`
+	Container_uuid string            `json:"container_uuid"`
+	Nmespace       string            `json:"namespace"`
+	Timestamp      string            `json:"timestamp"`
+	Stats          AppNginxStatsJson `json:"stats"`
 }
 
 type AppRedisStatsJson struct {
-	Timestamp               string  `json:"timestamp"`
-	Uptime_in_seconds       float64 `json:"uptime_in_seconds"`
-	Connected_clients       float64 `json:"connected_clients"`
-	Blocked_clients         float64 `json:"blocked_clients"`
-	Used_memory             float64 `json:"used_memory"`
-	Used_memory_rss         float64 `json:"used_memory_rss"`
-	Used_memory_peak        float64 `json:"used_memory_peak"`
-	Used_memory_lua         float64 `json:"used_memory_lua"`
-	Max_memory              float64 `json:"max_memory"`
-	Mem_fragmentation_ratio float64 `json:"mem_fragmentation_ratio"`
-
-	// # Persistence
+	Timestamp                    string  `json:"timestamp"`
+	Uptime_in_seconds            float64 `json:"uptime_in_seconds"`
+	Connected_clients            float64 `json:"connected_clients"`
+	Blocked_clients              float64 `json:"blocked_clients"`
+	Used_memory                  float64 `json:"used_memory"`
+	Used_memory_rss              float64 `json:"used_memory_rss"`
+	Used_memory_peak             float64 `json:"used_memory_peak"`
+	Used_memory_lua              float64 `json:"used_memory_lua"`
+	Max_memory                   float64 `json:"max_memory"`
+	Mem_fragmentation_ratio      float64 `json:"mem_fragmentation_ratio"`
 	Rdb_changes_since_last_save  float64 `json:"rdb_changes_since_last_save"`
 	Rdb_last_bgsave_time_sec     float64 `json:"rdb_last_bgsave_time_sec"`
 	Rdb_current_bgsave_time_sec  float64 `json:"rdb_current_bgsave_time_sec"`
@@ -171,47 +160,58 @@ type AppRedisStatsJson struct {
 	Aof_rewrite_scheduled        float64 `json:"aof_rewrite_scheduled"`
 	Aof_last_rewrite_time_sec    float64 `json:"aof_last_rewrite_time_sec"`
 	Aof_current_rewrite_time_sec float64 `json:"aof_current_rewrite_time_sec"`
-
-	// # Stats
-	Total_connections_received float64 `json:"total_connections_received"`
-	Total_commands_processed   float64 `json:"total_commands_processed"`
-	Total_net_input_bytes      float64 `json:"total_net_input_bytes"`
-	Total_net_output_bytes     float64 `json:"total_net_output_bytes"`
-	Rejected_connections       float64 `json:"rejected_connections"`
-	Expired_keys               float64 `json:"expired_keys"`
-	Evicted_keys               float64 `json:"evicted_keys"`
-	Keyspace_hits              float64 `json:"keyspace_hits"`
-	Keyspace_misses            float64 `json:"keyspace_misses"`
-	Pubsub_channels            float64 `json:"pubsub_channels"`
-	Pubsub_patterns            float64 `json:"pubsub_patterns"`
-
-	// # Replication
-	Loading           float64 `json:"loading"`
-	Connected_slaves  float64 `json:"connected_slaves"`
-	Repl_backlog_size float64 `json:"repl_backlog_size"`
-
-	// # CPU
-	Used_cpu_sys           float64 `json:"used_cpu_sys"`
-	Used_cpu_user          float64 `json:"used_cpu_user"`
-	Used_cpu_sys_children  float64 `json:"used_cpu_sys_children"`
-	Used_cpu_user_children float64 `json:"used_cpu_user_children"`
+	Total_connections_received   float64 `json:"total_connections_received"`
+	Total_commands_processed     float64 `json:"total_commands_processed"`
+	Total_net_input_bytes        float64 `json:"total_net_input_bytes"`
+	Total_net_output_bytes       float64 `json:"total_net_output_bytes"`
+	Rejected_connections         float64 `json:"rejected_connections"`
+	Expired_keys                 float64 `json:"expired_keys"`
+	Evicted_keys                 float64 `json:"evicted_keys"`
+	Keyspace_hits                float64 `json:"keyspace_hits"`
+	Keyspace_misses              float64 `json:"keyspace_misses"`
+	Pubsub_channels              float64 `json:"pubsub_channels"`
+	Pubsub_patterns              float64 `json:"pubsub_patterns"`
+	Loading                      float64 `json:"loading"`
+	Connected_slaves             float64 `json:"connected_slaves"`
+	Repl_backlog_size            float64 `json:"repl_backlog_size"`
+	Used_cpu_sys                 float64 `json:"used_cpu_sys"`
+	Used_cpu_user                float64 `json:"used_cpu_user"`
+	Used_cpu_sys_children        float64 `json:"used_cpu_sys_children"`
+	Used_cpu_user_children       float64 `json:"used_cpu_user_children"`
 }
 
+//type AppRedisJson struct {
+//	Type string `json:"type"`
+//	Data struct {
+//		Container_uuid string              `json:"container_uuid"`
+//		Environment_id string              `json:"environment_id"`
+//		Container_name string              `json:"container_name"`
+//		Namespace      string              `json:"namespace"`
+//		Stats          []AppRedisStatsJson `json:"stats"`
+//	} `json:"data"`
+//}
+
 type AppRedisJson struct {
-	Type string `json:"type"`
-	Data struct {
-		Container_uuid string              `json:"container_uuid"`
-		Environment_id string              `json:"environment_id"`
-		Container_name string              `json:"container_name"`
-		Namespace      string              `json:"namespace"`
-		Stats          []AppRedisStatsJson `json:"stats"`
-	} `json:"data"`
+	Return_code  int                   `json:"return_code"`
+	Query_result []AppRedisQueryResult `json:"query_result"`
+}
+
+type AppRedisQueryResult struct {
+	Type string                  `json:"type"`
+	Data AppRedisQueryResultData `json:"data"`
+}
+
+type AppRedisQueryResultData struct {
+	Environment_id string            `json:"environment_id"`
+	Container_name string            `json:"container_name"`
+	Container_uuid string            `json:"container_uuid"`
+	Nmespace       string            `json:"namespace"`
+	Timestamp      string            `json:"timestamp"`
+	Stats          AppRedisStatsJson `json:"stats"`
 }
 
 func commandMeasurementsMySQL() string {
 	measurements := []string{
-
-		//mysql
 		"connections_total",
 		"command_query_total",
 		"command_insert_total",
@@ -244,8 +244,6 @@ func commandMeasurementsMySQL() string {
 }
 func commandMeasurementsNginx() string {
 	measurements := []string{
-
-		//Nginx
 		"active_connections",
 		"accepts",
 		"handled",
@@ -261,23 +259,15 @@ func commandMeasurementsNginx() string {
 
 func commandMeasurementsRedis() string {
 	measurements := []string{
-
-		//Redis
 		"uptime_in_seconds",
-
-		// # Clients
 		"connected_clients",
 		"blocked_clients",
-
-		// # Memory
 		"used_memory",
 		"used_memory_rss",
 		"used_memory_peak",
 		"used_memory_lua",
 		"max_memory",
 		"mem_fragmentation_ratio",
-
-		// # Persistence
 		"rdb_changes_since_last_save",
 		"rdb_last_bgsave_time_sec",
 		"rdb_current_bgsave_time_sec",
@@ -286,8 +276,6 @@ func commandMeasurementsRedis() string {
 		"aof_rewrite_scheduled",
 		"aof_last_rewrite_time_sec",
 		"aof_current_rewrite_time_sec",
-
-		// # Stats
 		"total_connections_received",
 		"total_commands_processed",
 		"total_net_input_bytes",
@@ -299,13 +287,9 @@ func commandMeasurementsRedis() string {
 		"keyspace_misses",
 		"pubsub_channels",
 		"pubsub_patterns",
-
-		// # Replication
 		"loading",
 		"connected_slaves",
 		"repl_backlog_size",
-
-		// # CPU
 		"used_cpu_sys",
 		"used_cpu_user",
 		"used_cpu_sys_children",

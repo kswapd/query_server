@@ -6,19 +6,26 @@ import (
 	"log"
 	"strconv"
 	"time"
-
+	"sort"
 	"github.com/gin-gonic/gin"
 )
 
 func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson) {
 
 	var monitorResult QueryMonitorResultJson
+
+	//monitorResult.Return_code = "200"
 	//ret := Monitor.QueryDB("select * from /.*/ limit 10")
 	var finalQuery string
 	timeStr := ""
 	const TimeFormat = "2006-01-02 15:04:05"
 	const RFC3339Nano = "2006-01-02T15:04:05.999999999Z07:00"
 	const InfluxTimeFormat = "2006-01-02T15:04:05.999Z"
+
+	var containerMonitor QueryContainerMonitor
+	containerMonitor.Return_code = 200
+
+	var containerMonitorKeys []string
 	//var err error
 	//MetricsName-->TimeStamp-->value
 	timeNameStatResult := make(map[string]map[string]int)
@@ -37,10 +44,17 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 		log.Fatalln("Error: ", err)
 	}
 
-	st := startTime.Format(RFC3339Nano)
-	et := endTime.Format(RFC3339Nano)
+	//st := startTime.Format(RFC3339Nano)
+	//et := endTime.Format(RFC3339Nano)
 
-	finalQuery = fmt.Sprintf("select * from /.*/ where time > '%s' and time < '%s' order by time desc limit 10", st, et)
+	//finalQuery = fmt.Sprintf("select * from /.*/ where time > '%s' and time < '%s' order by time desc limit 1", st, et)
+	finalQuery = "select * from /.*/"
+	finalQuery += fmt.Sprintf(" WHERE \"container_uuid\"='%s' AND ", queryInfo.Container_uuid)
+    finalQuery += fmt.Sprintf("\"environment_id\"='%s' AND ", queryInfo.Environment_id)
+    finalQuery += fmt.Sprintf("time>='%s' AND time<='%s' order by time limit 10", queryInfo.Start_time, queryInfo.End_time)
+
+
+
 	fmt.Println(startTime, endTime)
 	fmt.Println(finalQuery)
 	_ = queryValidation
@@ -54,6 +68,12 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 		monitorResult.Environment_id = fmt.Sprintf("%s", ret[0].Series[0].Values[0][3])
 		monitorResult.Container_name = fmt.Sprintf("%s", ret[0].Series[0].Values[0][1])
 		monitorResult.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][4])
+	}else{
+		c.JSON(200, gin.H{
+            "return_code":  400,
+            "err_info":"query not found",
+        })
+        return 
 	}
 
 	for index := 0; index < len(ret[0].Series); index++ {
@@ -70,37 +90,39 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 			timeNameStatResult[se.Name][timeStr] = val
 		}
 	}
-	timeStat := make(map[string]*StatsInfo)
+	timeStat := make(map[string]*QueryMonitorUnit)
 
 	for k, v := range timeNameStatResult {
 		_ = k
 		t := v
 		for k1, val := range t {
 			if _, ok := timeStat[k1]; !ok {
-				timeStat[k1] = new(StatsInfo)
+				timeStat[k1] = new(QueryMonitorUnit)
 				//intTime,error := strconv.Atoi(k1)
+				/*fmt.Println(k1)
 				intNanoTime, error := strconv.ParseInt(k1, 10, 64)
 				if error != nil {
 					log.Fatalln("Error: ", err)
-				}
+				}*/
 
 				// timeStat[k1].Timestamp = time.Unix(intTime/1000000000, 0).Format(RFC3339Nano,)
-				timeStat[k1].Timestamp = time.Unix(0, intNanoTime).Format(RFC3339Nano)
+				timeStat[k1].Data.Timestamp = k1
+
+				//timeStat[k1].Timestamp = fmt.Sprintf("%s", ret[0].Series[0].Values[0][0])
+				timeStat[k1].Data.Container_uuid = fmt.Sprintf("%s", ret[0].Series[0].Values[0][2])
+				timeStat[k1].Data.Environment_id = fmt.Sprintf("%s", ret[0].Series[0].Values[0][3])
+				timeStat[k1].Data.Container_name = fmt.Sprintf("%s", ret[0].Series[0].Values[0][1])
+				timeStat[k1].Data.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][4])
+				timeStat[k1].Type = "container"
+
+				containerMonitorKeys = append(containerMonitorKeys, k1)
+				//time.Unix(0, intNanoTime).Format(RFC3339Nano)
 				//t := time.SecondsToLocalTime(1305861602)
 			}
 			info := timeStat[k1]
 			switch k {
 			case "cpu_usage_per_cpu":
 				//StatsInfo.Container_cpu_usage_seconds_total =
-				break
-			case "cpu_usage_system":
-				info.Container_cpu_system_seconds_total = val
-				break
-			case "cpu_usage_total":
-				info.Container_cpu_usage_seconds_total = val
-				break
-			case "cpu_usage_user":
-				info.Container_cpu_user_seconds_total = val
 				break
 			case "fs_limit":
 
@@ -110,40 +132,118 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 			case "load_average":
 				break
 			case "memory_usage":
-				info.Container_memory_usage_bytes = val
+				info.Data.Stats.Container_memory_usage_bytes = val
 				break
 			case "memory_working_set":
 				break
 			case "container_network_receive_packets_total":
-				info.Container_network_receive_bytes_total = val
+				info.Data.Stats.Container_network_receive_bytes_total = val
 				break
 			case "container_network_receive_errors_total":
-				info.Container_network_receive_errors_total = val
+				info.Data.Stats.Container_network_receive_errors_total = val
 				break
 			case "container_network_transmit_bytes_total":
-				info.Container_network_transmit_bytes_total = val
+				info.Data.Stats.Container_network_transmit_bytes_total = val
 				break
 			case "container_network_transmit_errors_total":
-				info.Container_network_transmit_errors_total = val
+				info.Data.Stats.Container_network_transmit_errors_total = val
+				break
+			case "container_tasks_state_nr_sleeping":
+				info.Data.Stats.Container_tasks_state_nr_sleeping = val
+				break
+			case "container_tasks_state_nr_io_wait":
+				info.Data.Stats.Container_tasks_state_nr_io_wait = val
+				break
+			case "container_network_transmit_packets_total":
+				info.Data.Stats.Container_network_transmit_packets_total = val
+				break
+			case "container_memory_usage_bytes":
+				info.Data.Stats.Container_memory_usage_bytes = val
+				break
+			case "container_memory_swap":
+				info.Data.Stats.Container_memory_swap = val
+				break
+			case "container_memory_cache":
+				info.Data.Stats.Container_memory_cache = val
+				break
+			case "container_cpu_usage_seconds_total":
+				info.Data.Stats.Container_cpu_usage_seconds_total = val
+				break
+			case "container_memory_limit_bytes":
+				info.Data.Stats.Container_memory_limit_bytes = val
+				break
+			case "container_diskio_service_bytes_read":
+				info.Data.Stats.Container_diskio_service_bytes_read = val
+				break
+			case "container_cpu_system_seconds_total":
+				info.Data.Stats.Container_cpu_system_seconds_total = val
+				break
+			case "container_tasks_state_nr_uninterruptible":
+				info.Data.Stats.Container_tasks_state_nr_uninterruptible = val
+				break
+			case "container_tasks_state_nr_running":
+				info.Data.Stats.Container_tasks_state_nr_running = val
+				break
+			case "container_network_transmit_packets_dropped_total":
+				info.Data.Stats.Container_network_transmit_packets_dropped_total = val
+				break
+			case "container_network_receive_packets_dropped_total":
+				info.Data.Stats.Container_network_receive_packets_dropped_total = val
+				break
+			case "container_network_receive_bytes_total":
+				info.Data.Stats.Container_network_receive_bytes_total = val
+				break
+			case "container_memory_rss":
+				info.Data.Stats.Container_memory_rss = val
+				break
+			case "container_cpu_user_seconds_total":
+				info.Data.Stats.Container_cpu_user_seconds_total = val
+				break
+			case "container_tasks_state_nr_stopped":
+				info.Data.Stats.Container_tasks_state_nr_stopped = val
+				break
+			case "container_diskio_service_bytes_write":
+				info.Data.Stats.Container_diskio_service_bytes_write = val
+				break
+			case "container_diskio_service_bytes_total":
+				info.Data.Stats.Container_diskio_service_bytes_total = val
+				break
+			case "container_diskio_service_bytes_sync":
+				info.Data.Stats.Container_diskio_service_bytes_sync = val
+				break
+			case "container_diskio_service_bytes_async":
+				info.Data.Stats.Container_diskio_service_bytes_async = val
 				break
 			default:
-				fmt.Println("Error metric name.")
+				fmt.Printf("Error metric name:%s.\n", k)
 			}
 
 		}
 	}
 
-	monitorResult.Stats = make([]StatsInfo, len(timeStat))
+	//monitorResult.Stats = make([]StatsInfo, len(timeStat))
+	containerMonitor.Query_result = make([]QueryMonitorUnit, len(timeStat))
 	index := 0
-	for k, _ := range timeStat {
+	/*for k, _ := range timeStat {
 		//fmt.Printf("%#v.\n",timeStat[k]);
-		monitorResult.Stats[index] = *timeStat[k]
+		//monitorResult.Stats[index] = *timeStat[k]
+		containerMonitor.Query_result[index]=  *timeStat[k]
+		
 		index++
-	}
+	}*/
+	sort.Strings(containerMonitorKeys) 
+	for _, k := range containerMonitorKeys {
+       // fmt.Println("Key:", k, "Value:", m[k])
+		containerMonitor.Query_result[index]=  *timeStat[k]
+		//fmt.Println(k)
+		index ++
+    }
+
 
 	_ = ret
 	_ = monitorResult
 
-	c.JSON(200, monitorResult)
+	//c.JSON(200, monitorResult)
+	c.JSON(200, containerMonitor)
 
 }
