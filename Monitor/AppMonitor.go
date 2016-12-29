@@ -1,55 +1,51 @@
 package Monitor
 
 import (
-	"query_server/Common"
-	//"encoding/json"
 	"fmt"
-	//"strconv"
+	"query_server/Common"
 
 	"github.com/gin-gonic/gin"
-	//"github.com/influxdata/influxdb/client/v2"
 )
 
-//最终命令
+const (
+	Functions_init = "*"
+)
+
+//用于查询的最终命令
 func queryCMDFinal(measurements string, qp Common.QueryMonitorJson, functions string) string {
 	cmd := "SELECT " + functions + " FROM " + measurements
-
 	cmd += fmt.Sprintf(" WHERE \"container_uuid\"='%s' AND ", qp.Container_uuid)
 	cmd += fmt.Sprintf("\"environment_id\"='%s' AND ", qp.Environment_id)
-	//cmd += fmt.Sprintf("time>='%s' AND time<='%s' GROUP BY time(%s)", qp.Start_time, qp.End_time, qp.Time_step)
 	cmd += fmt.Sprintf("time>='%s' AND time<='%s'", qp.Start_time, qp.End_time)
 
-	//cmd += fmt.Sprintf("limit %d", limit)
 	return cmd
 }
 
 func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson) {
 	var res interface{}
-	//确定app type：redis？Nginx？mysql？
-	measurementsForConfirmAppType := "connections_total,active_connections,uptime_in_seconds"
-	cmdForConfirmAppType := queryCMDFinal(measurementsForConfirmAppType, queryInfon, "*")
 
-	//	fmt.Println("for debug", cmdForConfirmAppType)
+	var appType string //确定app type：redis？Nginx？mysql？
+
+	/*
+		从redis，nginx，mysql中各选取一个measurement进行查询，获取查询结果，以确定app type
+	*/
+	measurementsForConfirmAppType := "connections_total,active_connections,uptime_in_seconds"
+	cmdForConfirmAppType := queryCMDFinal(measurementsForConfirmAppType, queryInfon, Functions_init)
+	cmdForConfirmAppType += " limit 1"
 
 	retForConfirmAppType := QueryDB(cmdForConfirmAppType)
 
-	//	fmt.Println("debug", retForConfirmAppType)
-	if retForConfirmAppType == nil {
-		c.JSON(400, res)
+	if len(retForConfirmAppType[0].Series) <= 0 {
+		c.JSON(200, gin.H{
+			"return_code": 400,
+			"err_info":    "query not found",
+		})
 		return
 	}
 	indexOfType := indexOf(retForConfirmAppType[0].Series[0].Columns, "type")
-	appType := retForConfirmAppType[0].Series[0].Values[0][indexOfType]
-	//	fmt.Println(appType)
-	if appType == nil {
-		fmt.Println("app type 未知")
-	} else {
-		appType = appType.(string)
-	}
+	appType = retForConfirmAppType[0].Series[0].Values[0][indexOfType].(string)
 
 	//确定measurements
-	//测试用
-	//	appType = "redis"
 	var measurements string
 	switch appType {
 	case "redis":
@@ -68,14 +64,9 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 
 	cmd := queryCMDFinal(measurements, queryInfon, "*")
 
-	//cmd = "select mean(*) from used_memory_rss,used_memory_peak limit 2"
-	//	fmt.Println(cmd)
-
 	ret := QueryDB(cmd)
 
-	//	fmt.Println(ret)
 	//聚合查询结果
-
 	switch appType {
 	case "redis":
 		{

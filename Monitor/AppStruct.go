@@ -1,47 +1,11 @@
-//package structjson
+//app的输出结构
 package Monitor
 
 import (
 	"strings"
 )
 
-//type framwork struct {
-//	Return_code int `json:"return_code"`
-//	Query_result
-//}
-
-//type Data struct {
-//	Environment_id string        `json:"environment_id"`
-//	Container_name string        `json:"container_name"`
-//	Container_uuid string        `json:"container_uuid"`
-//	Namespace      string        `json:"namespace"`
-//	TimeStamp      string        `json:"timestamp"`
-//	Stats          []interface{} `json:"stats"`
-//}
-
-//type QueryJson struct {
-//	Query_type      string `json:"query_type"`
-//	Container_uuid  string `json:"container_uuid"`
-//	Environment_id  string `json:"environment_id"`
-//	Start_time      string `json:"start_time"`
-//	End_time        string `json:"end_time"`
-//	Query_content   string `json:"query_content"`
-//	Length_per_page int    `json:"length_per_page"`
-//	Page_index      int    `json:"page_index"`
-//}
-
-type QueryPerformanceJson struct {
-	Query_type     string `json:"query_type"`
-	Container_uuid string `json:"container_uuid"`
-	Environment_id string `json:"environment_id"`
-	Start_time     string `json:"start_time"`
-	End_time       string `json:"end_time"`
-	Time_step      string `json:"time_step"`
-}
-
-/*
-app
-*/
+//MySQL
 type AppMySQLStatsJson struct {
 	Timestamp                                     string  `json:"timestamp"`
 	Connections_total                             float64 `json:"connection_total"`
@@ -70,17 +34,6 @@ type AppMySQLStatsJson struct {
 	Table_io_waits_seconds_total                  float64 `json:"table_io_waits_seconds_total"`
 }
 
-//type AppMySQLJson struct {
-//	Type string `json:"type"`
-//	Data struct {
-//		Container_uuid string              `json:"container_uuid"`
-//		Environment_id string              `json:"environment_id"`
-//		Container_name string              `json:"container_name"`
-//		Namespace      string              `json:"namespace"`
-//		Stats          []AppMySQLStatsInfo `json:"stats"`
-//	} `json:"data"`
-//}
-
 type AppMySQLJson struct {
 	Return_code  int                   `json:"return_code"`
 	Query_result []AppMySQLQueryResult `json:"query_result"`
@@ -100,6 +53,7 @@ type AppMySQLQueryResultData struct {
 	Stats          AppMySQLStatsJson `json:"stats"`
 }
 
+//Nginx
 type AppNginxStatsJson struct {
 	Timestamp          string  `json:"timestamp"`
 	Active_connections float64 `json:"active_connections"`
@@ -110,17 +64,6 @@ type AppNginxStatsJson struct {
 	Writing            float64 `json:"writing"`
 	Waiting            float64 `json:"waiting"`
 }
-
-//type AppNginxJson struct {
-//	Type string `json:"type"`
-//	Data struct {
-//		Container_uuid string              `json:"container_uuid"`
-//		Environment_id string              `json:"environment_id"`
-//		Container_name string              `json:"container_name"`
-//		Namespace      string              `json:"namespace"`
-//		Stats          []AppNginxStatsJson `json:"stats"`
-//	} `json:"data"`
-//}
 
 type AppNginxJson struct {
 	Return_code  int                   `json:"return_code"`
@@ -141,6 +84,7 @@ type AppNginxQueryResultData struct {
 	Stats          AppNginxStatsJson `json:"stats"`
 }
 
+//Redis
 type AppRedisStatsJson struct {
 	Timestamp                    string  `json:"timestamp"`
 	Uptime_in_seconds            float64 `json:"uptime_in_seconds"`
@@ -180,17 +124,6 @@ type AppRedisStatsJson struct {
 	Used_cpu_user_children       float64 `json:"used_cpu_user_children"`
 }
 
-//type AppRedisJson struct {
-//	Type string `json:"type"`
-//	Data struct {
-//		Container_uuid string              `json:"container_uuid"`
-//		Environment_id string              `json:"environment_id"`
-//		Container_name string              `json:"container_name"`
-//		Namespace      string              `json:"namespace"`
-//		Stats          []AppRedisStatsJson `json:"stats"`
-//	} `json:"data"`
-//}
-
 type AppRedisJson struct {
 	Return_code  int                   `json:"return_code"`
 	Query_result []AppRedisQueryResult `json:"query_result"`
@@ -210,6 +143,7 @@ type AppRedisQueryResultData struct {
 	Stats          AppRedisStatsJson `json:"stats"`
 }
 
+//MySQL measurements
 func commandMeasurementsMySQL() string {
 	measurements := []string{
 		"connections_total",
@@ -242,6 +176,8 @@ func commandMeasurementsMySQL() string {
 	str := strings.Join(measurements, ",")
 	return str
 }
+
+//Nginx measurements
 func commandMeasurementsNginx() string {
 	measurements := []string{
 		"active_connections",
@@ -257,6 +193,7 @@ func commandMeasurementsNginx() string {
 	return str
 }
 
+//Redis measurements
 func commandMeasurementsRedis() string {
 	measurements := []string{
 		"uptime_in_seconds",
