@@ -22,7 +22,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	const TimeFormat = "2006-01-02 15:04:05"
 	const RFC3339Nano = "2006-01-02T15:04:05.999999999Z07:00"
 	const InfluxTimeFormat = "2006-01-02T15:04:05.999Z"
-
+	const MyDB = "containerdb"
 	var containerMonitor QueryContainerMonitor
 	containerMonitor.Return_code = 200
 
@@ -65,8 +65,8 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	fmt.Println(finalTagQuery)
 	_ = queryValidation
 
-	ret := QueryDB(finalTagQuery)
-
+	ret := QueryDB(finalTagQuery, MyDB)
+	//fmt.Printf("%#v.\n",ret);
 	if len(ret[0].Series) > 0 {
 		// monitorResult.
 		containerMonitorTag.Timestamp = fmt.Sprintf("%s", ret[0].Series[0].Values[0][0])
@@ -94,7 +94,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
 
 
-    ret = QueryDB(finalMetricQuery)
+    ret = QueryDB(finalMetricQuery, MyDB)
 
     //fmt.Printf("%#v.\n",ret);
 	for index := 0; index < len(ret[0].Series); index++ {
