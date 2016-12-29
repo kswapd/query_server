@@ -76,11 +76,11 @@ type AppNginxQueryResult struct {
 }
 
 type AppNginxQueryResultData struct {
+	Timestamp      string            `json:"timestamp"`
 	Environment_id string            `json:"environment_id"`
 	Container_name string            `json:"container_name"`
 	Container_uuid string            `json:"container_uuid"`
 	Namespace      string            `json:"namespace"`
-	Timestamp      string            `json:"timestamp"`
 	Stats          AppNginxStatsJson `json:"stats"`
 }
 
@@ -135,11 +135,11 @@ type AppRedisQueryResult struct {
 }
 
 type AppRedisQueryResultData struct {
+	Timestamp      string            `json:"timestamp"`
 	Environment_id string            `json:"environment_id"`
 	Container_name string            `json:"container_name"`
 	Container_uuid string            `json:"container_uuid"`
 	Nmespace       string            `json:"namespace"`
-	Timestamp      string            `json:"timestamp"`
 	Stats          AppRedisStatsJson `json:"stats"`
 }
 
