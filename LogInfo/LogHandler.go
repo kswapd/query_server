@@ -41,9 +41,10 @@ if err != nil {
     panic(err)
 }*/
 
-     // termQuery := elastic.NewTermQuery("type", "*")
+      termQuery := elastic.NewTermQuery("type", "log_container")
       searchResult, err2 := client.Search().
-          Index("fluentd_from_container_to_es.log-2016.12.05").   // search in index "twitter"          Query(termQuery).   // specify the query          Sort("type", true).
+          Index("fluentd_from_container_to_es.log-2016.12.01").   // search in index "twitter"          Query(termQuery).   // specify the query          Sort("type", true).
+          Query(termQuery).
           From(0).Size(10).
           Pretty(true).       
           Do(context.TODO())
