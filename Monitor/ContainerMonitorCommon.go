@@ -23,7 +23,7 @@ type ContainerFileSystem struct {
 } 
 
 type StatsInfo struct {
-          //Timestamp string `json:"timestamp"`
+          Timestamp string `json:"timestamp"`
           Container_cpu_usage_seconds_total int `json:"container_cpu_usage_seconds_total"`
           Container_cpu_user_seconds_total int `json:"container_cpu_user_seconds_total"`
           Container_cpu_system_seconds_total int `json:"container_cpu_system_seconds_total"`

@@ -13,8 +13,9 @@ func Start(){
 
 
     r.GET("/logyun/selectPerformanceInfo.do", OnQueryMonitorInfo)
+    r.POST("/logyun/selectPerformanceInfo.do", OnQueryMonitorInfo)
     r.GET("/logyun/selectLogInfo.do",OnQueryLogInfo)
-
+    
     /*r.GET("/queryMonitorInfo", func(c *gin.Context) {
 
         id := c.Query("id")
