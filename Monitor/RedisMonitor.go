@@ -10,7 +10,13 @@ import (
 
 //原理参照nginx
 func parseRedisResult(res []client.Result) AppRedisJson {
+
 	var appRedisJson AppRedisJson
+
+	if len(res) == 0 {
+		return appRedisJson
+	}
+
 	redisResult := make(map[string]map[string]float64)
 
 	//遍历res，取出结果
@@ -19,6 +25,9 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 		index := indexOf(v.Columns, "first_value")
 
 		for _, v1 := range v.Values {
+			if v1[index].(string) == "" {
+				continue
+			}
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
 			redisResult[v.Name][v1[0].(string)] = f64
 		}

@@ -10,6 +10,11 @@ import (
 
 func parseNginxResult(res []client.Result) AppNginxJson {
 	var appNginxJson AppNginxJson
+
+	if len(res) == 0 {
+		return appNginxJson
+	}
+
 	nginxResult := make(map[string]map[string]float64) //map["measurement"]map["time"]float64
 
 	//遍历res，取出结果
@@ -18,6 +23,9 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 		index := indexOf(v.Columns, "first_value")     //index指定value存储位置
 
 		for _, v1 := range v.Values {
+			if v1[index].(string) == "" {
+				continue
+			}
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
 			nginxResult[v.Name][v1[0].(string)] = f64
 		}

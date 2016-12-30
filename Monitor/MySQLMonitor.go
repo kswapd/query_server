@@ -12,6 +12,10 @@ import (
 func parseMySQLResult(res []client.Result) AppMySQLJson {
 
 	var appMySQLJson AppMySQLJson
+
+	if len(res) == 0 {
+		return appMySQLJson
+	}
 	mysqlResult := make(map[string]map[string]float64)
 
 	//遍历res，取出结果
@@ -20,6 +24,11 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 		index := indexOf(v.Columns, "first_value")
 
 		for _, v1 := range v.Values {
+
+			if v1[index].(string) == "" {
+				continue
+			}
+
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
 			mysqlResult[v.Name][v1[0].(string)] = f64
 		}
