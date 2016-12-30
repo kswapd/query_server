@@ -1,8 +1,8 @@
 package main
 
 import (
-    "query_server/MicroService"
 	"log"
+	"query_server/MicroService"
 )
 
 func main() {
