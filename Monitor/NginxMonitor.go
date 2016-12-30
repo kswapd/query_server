@@ -15,7 +15,7 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 	//遍历res，取出结果
 	for _, v := range res[0].Series {
 		nginxResult[v.Name] = make(map[string]float64) //map[time]value
-		index := indexOf(v.Columns, "value")           //index指定value存储位置
+		index := indexOf(v.Columns, "first_value")     //index指定value存储位置
 
 		for _, v1 := range v.Values {
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)

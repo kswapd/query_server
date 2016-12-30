@@ -17,7 +17,7 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 	//遍历res，取出结果
 	for _, v := range res[0].Series {
 		mysqlResult[v.Name] = make(map[string]float64)
-		index := indexOf(v.Columns, "value")
+		index := indexOf(v.Columns, "first_value")
 
 		for _, v1 := range v.Values {
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)

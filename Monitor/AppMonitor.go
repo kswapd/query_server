@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	Functions_init = "*"
+	Functions_init  = "*"
+	Functions_first = "first(*),container_name,container_uuid,environment_id,namespace,type"
 )
 
 //用于查询的最终命令
@@ -17,6 +18,12 @@ func queryCMDFinal(measurements string, qp Common.QueryMonitorJson, functions st
 	cmd += fmt.Sprintf(" WHERE \"container_uuid\"='%s' AND ", qp.Container_uuid)
 	cmd += fmt.Sprintf("\"environment_id\"='%s' AND ", qp.Environment_id)
 	cmd += fmt.Sprintf("time>='%s' AND time<='%s'", qp.Start_time, qp.End_time)
+
+	if functions != "*" {
+		cmd += fmt.Sprintf(" group by time(%ss)", qp.Time_step)
+	}
+
+	fmt.Println(cmd)
 
 	return cmd
 }
@@ -30,11 +37,10 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 		从redis，nginx，mysql中各选取一个measurement进行查询，获取查询结果，以确定app type
 	*/
 	measurementsForConfirmAppType := "connections_total,active_connections,uptime_in_seconds"
-	cmdForConfirmAppType := queryCMDFinal(measurementsForConfirmAppType, queryInfon, Functions_init)
+	cmdForConfirmAppType := queryCMDFinal(measurementsForConfirmAppType, queryInfon, "*")
 	cmdForConfirmAppType += " limit 1"
 
 	retForConfirmAppType := QueryDB(cmdForConfirmAppType, "appdb")
-
 	if len(retForConfirmAppType[0].Series) <= 0 {
 		c.JSON(200, gin.H{
 			"return_code": 400,
@@ -62,7 +68,7 @@ func queryPerformanceHandler(c *gin.Context, queryInfon Common.QueryMonitorJson)
 		}
 	}
 
-	cmd := queryCMDFinal(measurements, queryInfon, "*")
+	cmd := queryCMDFinal(measurements, queryInfon, Functions_first)
 
 	ret := QueryDB(cmd, "appdb")
 
