@@ -81,7 +81,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	}
 
 
-	finalMetricQuery = "select first(*) from /.*/"
+	finalMetricQuery = "select last(*) from /.*/"
 	finalMetricQuery += fmt.Sprintf(" WHERE \"container_uuid\"='%s' AND ", queryInfo.Container_uuid)
     finalMetricQuery += fmt.Sprintf("\"environment_id\"='%s' AND ", queryInfo.Environment_id)
     finalMetricQuery += fmt.Sprintf("time>='%s' AND time<='%s' group by time(%ss)", queryInfo.Start_time, queryInfo.End_time, queryInfo.Time_step)
@@ -99,6 +99,10 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 		timeNameStatResult[se.Name] = make(map[string]int)
 
 		for valIndex := 0; valIndex < len(se.Values); valIndex++ {
+
+			if(se.Values[valIndex][2] == nil){
+				continue
+			}
 			timeStr = fmt.Sprintf("%s", se.Values[valIndex][0])
 			valStr := fmt.Sprintf("%s", se.Values[valIndex][2])
 			val, err := strconv.Atoi(valStr)
