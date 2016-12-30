@@ -25,7 +25,7 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 
 		for _, v1 := range v.Values {
 
-			if v1[index].(string) == "" {
+			if v1 == nil {
 				continue
 			}
 

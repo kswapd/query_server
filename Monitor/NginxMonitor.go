@@ -23,7 +23,7 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 		index := indexOf(v.Columns, "first_value")     //index指定value存储位置
 
 		for _, v1 := range v.Values {
-			if v1[index].(string) == "" {
+			if v1 == nil {
 				continue
 			}
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)

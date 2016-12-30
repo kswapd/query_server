@@ -21,11 +21,12 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 
 	//遍历res，取出结果
 	for _, v := range res[0].Series {
+
 		redisResult[v.Name] = make(map[string]float64)
 		index := indexOf(v.Columns, "first_value")
 
 		for _, v1 := range v.Values {
-			if v1[index].(string) == "" {
+			if v1 == nil {
 				continue
 			}
 			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
