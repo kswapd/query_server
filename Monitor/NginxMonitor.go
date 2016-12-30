@@ -20,14 +20,13 @@ func parseNginxResult(res []client.Result) AppNginxJson {
 	//遍历res，取出结果
 	for _, v := range res[0].Series {
 		nginxResult[v.Name] = make(map[string]float64) //map[time]value
-		index := indexOf(v.Columns, "first_value")     //index指定value存储位置
+		index := indexOf(v.Columns, Value_key_of_last) //index指定value存储位置
 
 		for _, v1 := range v.Values {
-			if v1 == nil {
-				continue
+			if len(v1) >= index {
+				f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
+				nginxResult[v.Name][v1[0].(string)] = f64
 			}
-			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
-			nginxResult[v.Name][v1[0].(string)] = f64
 		}
 	}
 

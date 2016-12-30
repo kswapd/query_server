@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	Functions_init  = "*"
-	Functions_first = "last(*),container_name,container_uuid,environment_id,namespace,type"
+	Functions_init    = "*"
+	Functions_first   = "last(*),container_name,container_uuid,environment_id,namespace,type"
+	Value_key_of_last = "last_value"
 )
 
 //用于查询的最终命令

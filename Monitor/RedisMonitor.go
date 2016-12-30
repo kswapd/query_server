@@ -13,6 +13,8 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 
 	var appRedisJson AppRedisJson
 
+	//	fmt.Println("############################", len(res))
+
 	if len(res) == 0 {
 		return appRedisJson
 	}
@@ -23,14 +25,13 @@ func parseRedisResult(res []client.Result) AppRedisJson {
 	for _, v := range res[0].Series {
 
 		redisResult[v.Name] = make(map[string]float64)
-		index := indexOf(v.Columns, "first_value")
+		index := indexOf(v.Columns, Value_key_of_last)
 
 		for _, v1 := range v.Values {
-			if v1 == nil {
-				continue
+			if len(v1) >= index {
+				f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
+				redisResult[v.Name][v1[0].(string)] = f64
 			}
-			f64, _ := strconv.ParseFloat(string(v1[index].(json.Number)), 64)
-			redisResult[v.Name][v1[0].(string)] = f64
 		}
 	}
 
