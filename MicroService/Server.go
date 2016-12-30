@@ -10,6 +10,12 @@ func Start(){
     r.POST("/queryLogInfo", OnQueryLogInfo)
     r.POST("/queryMonitorInfo",OnQueryMonitorInfo)
     r.GET("/queryMonitorInfo",OnQueryMonitorInfo)
+
+
+    r.GET("/logyun/selectPerformanceInfo.do", OnQueryMonitorInfo)
+    r.POST("/logyun/selectPerformanceInfo.do", OnQueryMonitorInfo)
+    r.GET("/logyun/selectLogInfo.do",OnQueryLogInfo)
+    
     /*r.GET("/queryMonitorInfo", func(c *gin.Context) {
 
         id := c.Query("id")
@@ -19,5 +25,6 @@ func Start(){
 
         fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
     })*/
-    r.Run() // listen and serve on 0.0.0.0:8080
+    //r.Run() // listen and serve on 0.0.0.0:8080
+    r.Run(":8100")
 }

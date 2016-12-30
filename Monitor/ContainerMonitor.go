@@ -132,6 +132,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 				timeStat[k1].Data.Container_name = containerMonitorTag.Container_name 
 				timeStat[k1].Data.Namespace = containerMonitorTag.Namespace
 				timeStat[k1].Type = containerMonitorTag.Type
+				timeStat[k1].Data.Stats.Timestamp = k1
 
 				containerMonitorKeys = append(containerMonitorKeys, k1)
 				//time.Unix(0, intNanoTime).Format(RFC3339Nano)
