@@ -6,7 +6,7 @@ services:
     ports:
       - "8100:8100"
     environment:
-      - NFLUXDB_HOST=54.223.149.26:8086
+      - INFLUXDB_HOST=54.223.149.26:8086
     network_mode: "host"
     labels:
       caas.hna.monitor.queryserver: 'true'
