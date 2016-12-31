@@ -1,0 +1,12 @@
+version: '2'
+services:
+  monitor-query-server:
+    privileged: true
+    image: "mutemaniac/monitor-query-server:0.1"
+    ports:
+      - "8100:8100"
+    environment:
+      - NFLUXDB_HOST=54.223.149.26:8086
+    network_mode: "host"
+    labels:
+      caas.hna.monitor.queryserver: 'true'
