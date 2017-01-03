@@ -80,19 +80,29 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
         return 
 	}
 
-
-	finalMetricQuery = "select sample(*, 1) from /.*/"
+	//sample(*, 1) 
+	finalMetricQuery = "select first(*) from /.*/"
 	finalMetricQuery += fmt.Sprintf(" WHERE \"container_uuid\"='%s' AND ", queryInfo.Container_uuid)
     finalMetricQuery += fmt.Sprintf("\"environment_id\"='%s' AND ", queryInfo.Environment_id)
     finalMetricQuery += fmt.Sprintf("time>='%s' AND time<='%s' group by time(%ss)", queryInfo.Start_time, queryInfo.End_time, queryInfo.Time_step)
 
+
+
+
+    finalMetricQuery += "; select time,value from /.*/"
+	finalMetricQuery += fmt.Sprintf(" WHERE \"container_uuid\"='%s' AND ", queryInfo.Container_uuid)
+    finalMetricQuery += fmt.Sprintf("\"environment_id\"='%s' AND ", queryInfo.Environment_id)
+    finalMetricQuery += fmt.Sprintf("time>='%s' AND time<='%s' order by time desc limit 1", queryInfo.Start_time, queryInfo.End_time)
+
+
+
+
+
     fmt.Println(finalMetricQuery)
-
-
-
 
     ret = QueryDB(finalMetricQuery, MyDB)
 
+    //fmt.Printf("%#v.\n",ret[1]);
     //fmt.Printf("%#v.\n",ret);
 	for index := 0; index < len(ret[0].Series); index++ {
 		se := ret[0].Series[index]
@@ -112,6 +122,34 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 			timeNameStatResult[se.Name][timeStr] = val
 		}
 	}
+
+
+
+	for index := 0; index < len(ret[1].Series); index++ {
+		se := ret[1].Series[index]
+
+		if timeNameStatResult[se.Name] == nil{
+			timeNameStatResult[se.Name] = make(map[string]int)
+		}
+
+		for valIndex := 0; valIndex < len(se.Values); valIndex++ {
+
+			if(se.Values[valIndex][1] == nil){
+				continue
+			}
+			timeStr = fmt.Sprintf("%s", se.Values[valIndex][0])
+			valStr := fmt.Sprintf("%s", se.Values[valIndex][1])
+			val, err := strconv.Atoi(valStr)
+			_ = err
+			//fmt.Printf("%d :%s,%s,%s\n", index, se.Name, se.Values[valIndex][28], se.Values[valIndex][0])
+			//fmt.Println(reflect.TypeOf(se.Name))
+			timeNameStatResult[se.Name][timeStr] = val
+		}
+	}
+
+
+
+
 	timeStat := make(map[string]*QueryMonitorUnit)
 
 	for k, v := range timeNameStatResult {
