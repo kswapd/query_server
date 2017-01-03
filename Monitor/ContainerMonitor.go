@@ -81,7 +81,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	}
 
 
-	finalMetricQuery = "select last(*) from /.*/"
+	finalMetricQuery = "select sample(*, 1) from /.*/"
 	finalMetricQuery += fmt.Sprintf(" WHERE \"container_uuid\"='%s' AND ", queryInfo.Container_uuid)
     finalMetricQuery += fmt.Sprintf("\"environment_id\"='%s' AND ", queryInfo.Environment_id)
     finalMetricQuery += fmt.Sprintf("time>='%s' AND time<='%s' group by time(%ss)", queryInfo.Start_time, queryInfo.End_time, queryInfo.Time_step)
