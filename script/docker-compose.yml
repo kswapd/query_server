@@ -2,11 +2,11 @@ version: '2'
 services:
   monitor-query-server:
     privileged: true
-    image: "mutemaniac/monitor-query-server:0.1"
+    image: "registry.hnaresearch.com/public/monitor-query-server:0.2"
     ports:
       - "8100:8100"
     environment:
-      - INFLUXDB_HOST=54.223.149.26:8086
+      - INFLUXDB_HOST=internal-hna-caas-product-bd-influxdb-lb-1872922884.cn-north-1.elb.amazonaws.com.cn:8086
     network_mode: "host"
     labels:
       caas.hna.monitor.queryserver: 'true'
