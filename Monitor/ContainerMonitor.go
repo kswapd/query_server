@@ -30,13 +30,13 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
 	var queryValidation = true
 	timeStr := ""
-	startTime, err := time.Parse(RFC3339Nano, queryInfo.Start_time)
+	_, err := time.Parse(RFC3339Nano, queryInfo.Start_time)
 	if err != nil {
 		queryValidation = false
 		log.Fatalln("Error: ", err)
 	}
 
-	endTime, err := time.Parse(RFC3339Nano, queryInfo.End_time)
+	_, err = time.Parse(RFC3339Nano, queryInfo.End_time)
 	if err != nil {
 		queryValidation = false
 		log.Fatalln("Error: ", err)
@@ -56,9 +56,6 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
     finalTagQuery += fmt.Sprintf("time>='%s' AND time<='%s' limit 1", queryInfo.Start_time, queryInfo.End_time)
 
 	
-
-
-	fmt.Println(startTime, endTime)
 	fmt.Println(finalTagQuery)
 	_ = queryValidation
 
@@ -66,12 +63,19 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 	//fmt.Printf("%#v.\n",ret);
 	if len(ret[0].Series) > 0 {
 		// monitorResult.
-		containerMonitorTag.Timestamp = fmt.Sprintf("%s", ret[0].Series[0].Values[0][0])
-		containerMonitorTag.Container_uuid = fmt.Sprintf("%s", ret[0].Series[0].Values[0][3])
-		containerMonitorTag.Environment_id = fmt.Sprintf("%s", ret[0].Series[0].Values[0][4])
-		containerMonitorTag.Container_name = fmt.Sprintf("%s", ret[0].Series[0].Values[0][2])
-		containerMonitorTag.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][6])
-		containerMonitorTag.Type = fmt.Sprintf("%s", ret[0].Series[0].Values[0][8])
+		timeInd:= indexOf(ret[0].Series[0].Columns, "time")
+		uuidInd := indexOf(ret[0].Series[0].Columns, "container_uuid")
+		envIdInd := indexOf(ret[0].Series[0].Columns, "environment_id")
+		nameInd := indexOf(ret[0].Series[0].Columns, "container_name")
+		namespaceInd := indexOf(ret[0].Series[0].Columns, "namespace")
+		typeInd := indexOf(ret[0].Series[0].Columns, "type")
+
+		containerMonitorTag.Timestamp = fmt.Sprintf("%s", ret[0].Series[0].Values[0][timeInd])
+		containerMonitorTag.Container_uuid = fmt.Sprintf("%s", ret[0].Series[0].Values[0][uuidInd])
+		containerMonitorTag.Environment_id = fmt.Sprintf("%s", ret[0].Series[0].Values[0][envIdInd])
+		containerMonitorTag.Container_name = fmt.Sprintf("%s", ret[0].Series[0].Values[0][nameInd])
+		containerMonitorTag.Namespace = fmt.Sprintf("%s", ret[0].Series[0].Values[0][namespaceInd])
+		containerMonitorTag.Type = fmt.Sprintf("%s", ret[0].Series[0].Values[0][typeInd])
 	}else{
 		c.JSON(200, gin.H{
             "return_code":  400,
@@ -104,6 +108,11 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
     //fmt.Printf("%#v.\n",ret[1]);
     //fmt.Printf("%#v.\n",ret);
+
+    //timeInd := indexOf(ret[0].Series[0].Columns, "time")
+	//valInd := indexOf(ret[0].Series[0].Columns, "")
+
+
 	for index := 0; index < len(ret[0].Series); index++ {
 		se := ret[0].Series[index]
 		timeNameStatResult[se.Name] = make(map[string]int)
