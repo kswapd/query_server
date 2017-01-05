@@ -119,7 +119,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
 		for valIndex := 0; valIndex < len(se.Values); valIndex++ {
 
-			if(se.Values[valIndex][2] == nil){
+			if(se.Values[valIndex][2] == nil){			//todo , remove hard code.
 				continue
 			}
 			timeStr = fmt.Sprintf("%s", se.Values[valIndex][0])
@@ -143,7 +143,7 @@ func QueryContainerMonitorInfo(c *gin.Context, queryInfo Common.QueryMonitorJson
 
 		for valIndex := 0; valIndex < len(se.Values); valIndex++ {
 
-			if(se.Values[valIndex][1] == nil){
+			if(se.Values[valIndex][1] == nil){				//todo , remove hard code.
 				continue
 			}
 			timeStr = fmt.Sprintf("%s", se.Values[valIndex][0])

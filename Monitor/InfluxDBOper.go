@@ -3,7 +3,6 @@ package Monitor
 import (
 	"flag"
 	"log"
-
 	"github.com/influxdata/influxdb/client/v2"
 )
 
