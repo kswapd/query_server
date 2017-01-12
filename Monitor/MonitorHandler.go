@@ -57,3 +57,27 @@ func QueryMonitorInfo(c *gin.Context) {
 	}
 
 }
+
+
+
+
+func QueryContainerStatus(c *gin.Context) {
+	var queryInfo Common.QueryContainerStatus
+
+	queryInfo.Query_type = c.Query("query_type")
+	queryInfo.Container_uuid = c.Query("container_uuid")
+	queryInfo.Start_time = c.Query("start_time")
+	queryInfo.End_time = c.Query("end_time")
+	//c.BindJSON(&queryInfo)
+
+	//	fmt.Println(queryInfo)
+
+	switch queryInfo.Query_type {
+	case "container":
+		QueryContainerStatusHandler(c, queryInfo)
+	default:
+		QueryContainerStatusHandler(c, queryInfo)
+
+	}
+
+}

@@ -19,3 +19,7 @@ func OnQueryLogInfo(c *gin.Context){
 func OnQueryMonitorInfo(c *gin.Context) {
   Monitor.QueryMonitorInfo(c)
 }
+
+func OnQueryContainerStatus(c *gin.Context) {
+  Monitor.QueryContainerStatus(c)
+}

@@ -19,3 +19,10 @@ type QueryMonitorJson struct {
 	End_time       string `json:"end_time"`
 	Time_step      string `json:"time_step"`
 }
+
+type QueryContainerStatus struct {
+	Query_type     string `json:"query_type"`
+	Container_uuid string `json:"container_uuid"`
+	Start_time     string `json:"start_time"`
+	End_time       string `json:"end_time"`
+}
