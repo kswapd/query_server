@@ -8,6 +8,8 @@ func Start(){
     r := gin.Default()
     r.GET("/ping", OnPing)
     r.POST("/queryLogInfo", OnQueryLogInfo)
+    r.GET("/queryLogInfo", OnQueryLogInfo)
+
     r.POST("/queryMonitorInfo",OnQueryMonitorInfo)
     r.GET("/queryMonitorInfo",OnQueryMonitorInfo)
 

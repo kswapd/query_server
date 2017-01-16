@@ -7,8 +7,8 @@ type QueryLogJson struct {
 	Start_time      string `json:"start_time"`
 	End_time        string `json:"end_time"`
 	Query_content   string `json:"query_content"`
-	Length_per_page int    `json:"length_per_page"`
-	Page_index      int    `json:"page_index"`
+	Length_per_page string    `json:"length_per_page"`
+	Page_index      string    `json:"page_index"`
 }
 
 type QueryMonitorJson struct {
