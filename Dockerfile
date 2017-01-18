@@ -1,4 +1,5 @@
-FROM alpine
+#FROM alpine
+FROM debian:jessie
 #FROM scratch
 MAINTAINER qian.tang@hnair.com
 
@@ -10,8 +11,8 @@ COPY ./bin/monitor-query-server /usr/bin/
 RUN chmod 777 /usr/bin/monitor-query-server
 EXPOSE 8100
 #ENTRYPOINT ["/usr/bin/monitor-query-server -influxdb_driver_host=${INFLUXDB_HOST}"]
-#ENTRYPOINT /usr/bin/monitor-query-server -influxdb_driver_host="${INFLUXDB_HOST}"
-#ENTRYPOINT ["/usr/bin/monitor-query-server","-influxdb_driver_host=${INFLUXDB_HOST}"]
-ENTRYPOINT ["/usr/bin/monitor-query-server"]
+ENTRYPOINT /usr/bin/monitor-query-server -influxdb_driver_host="${INFLUXDB_HOST}"
+#ENTRYPOINT ["/usr/bin/monitor-query-server", "-influxdb_driver_host", ${INFLUXDB_HOST}]
+#ENTRYPOINT ["/usr/bin/monitor-query-server"]
 #CMD ["/usr/bin/monitor-query-server"]
 
