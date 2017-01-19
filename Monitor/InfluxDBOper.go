@@ -16,6 +16,7 @@ func CreateInfluxDBClient() {
 		Addr: "http://" + *ArgDbHost,
 	})
 	fmt.Println(*ArgDbHost)
+
 	if err != nil {
 		log.Fatalln("Error: ", err)
 	}
