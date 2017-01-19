@@ -1,5 +1,5 @@
-#FROM alpine
-FROM debian:jessie
+FROM alpine
+#FROM debian:jessie
 #FROM scratch
 MAINTAINER qian.tang@hnair.com
 

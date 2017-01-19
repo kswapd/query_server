@@ -2,7 +2,7 @@ version: '2'
 services:
   monitor-query-server:
     privileged: true
-    image: "registry.hnaresearch.com/public/monitor-query-server:0.2"
+    image: "registry.hnaresearch.com/public/monitor-query-server:1.2"
     ports:
       - "8100:8100"
     environment:
