@@ -8,7 +8,7 @@ import (
 //MySQL
 type AppMySQLStatsJson struct {
 	Timestamp                                     string  `json:"timestamp"`
-	Connections_total                             float64 `json:"connection_total"`
+	Connections_total                             float64 `json:"connections_total"`
 	Command_query_total                           float64 `json:"command_query_total"`
 	Command_insert_total                          float64 `json:"command_insert_total"`
 	Command_update_total                          float64 `json:"command_update_total"`

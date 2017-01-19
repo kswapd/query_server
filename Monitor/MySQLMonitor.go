@@ -42,7 +42,7 @@ func parseMySQLResult(res []client.Result) AppMySQLJson {
 			info.Timestamp = k1
 			switch k {
 
-			case "connection_total":
+			case "connections_total":
 				{
 					info.Connections_total = val
 				}

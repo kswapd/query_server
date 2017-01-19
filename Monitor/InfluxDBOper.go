@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"github.com/influxdata/influxdb/client/v2"
+	"fmt"
 )
 
 var Cli client.Client
@@ -14,7 +15,7 @@ func CreateInfluxDBClient() {
 	Cli, err = client.NewHTTPClient(client.HTTPConfig{
 		Addr: "http://" + *ArgDbHost,
 	})
-
+	fmt.Println(*ArgDbHost)
 	if err != nil {
 		log.Fatalln("Error: ", err)
 	}
