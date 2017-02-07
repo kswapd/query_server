@@ -2,6 +2,7 @@ package Common
 
 type QueryLogJson struct {
 	Query_type      string `json:"query_type"`
+	File_name      string `json:"file_name"`
 	Container_uuid  string `json:"container_uuid"`
 	Environment_id  string `json:"environment_id"`
 	Start_time      string `json:"start_time"`
