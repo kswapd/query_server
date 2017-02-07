@@ -118,7 +118,7 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
 
       search = search.From(pageIndex-1).Size(lengthPerPage)
-
+      search = search.Sort("data.log_info.log_time", false)
       searchResult, err := search.Do(context.TODO())
 
       if err != nil {
@@ -245,7 +245,8 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
 
       search = search.From(pageIndex-1).Size(lengthPerPage)
-
+      search = search.Sort("data.log_info.log_time", false)
+      
       searchResult, err := search.Do(context.TODO())
 
       if err != nil {
