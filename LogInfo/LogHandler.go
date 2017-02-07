@@ -5,6 +5,7 @@ import (
     "query_server/Common"
    // "log"
     "strconv"
+    "strings"
     "encoding/json"
     elastic "gopkg.in/olivere/elastic.v5"
     "golang.org/x/net/context"
@@ -236,8 +237,8 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
           c.JSON(200, ErrElasticsearch)
           return
       }  
-      s := string(data)
-      fmt.Println(s)
+      ss := string(data)
+      fmt.Println(ss)
       
       search := client.Search().Index("fluentd_from_*_to_es.log-*")//.Type("film")
       search = search.Query(q)//.Filter(andFilter)
@@ -255,50 +256,83 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
 
 
+      var appType string
+      var s SContainerLogger
 
-      var logResult SQueryContainerLogResult
-      var t SContainerLogger
-      logResult.Return_code = 200
+      var logNginxResult SQueryNginxLogResult
+      var logRedisResult SQueryRedisLogResult
+      var logMysqlResult SQueryMysqlLogResult
+      
+
+      //var t SNginxLogger
+      //var t interface{}
+      var tNginx SNginxLogger
+      var tMysql SMysqlLogger
+      var tRedis SRedisLogger
+
+      /*logResult.Return_code = 200
       logResult.Current_query_result_length = 10
-      logResult.All_query_result_length = 100
+      logResult.All_query_result_length = 100*/
 
       if len(searchResult.Hits.Hits) > 0 {
 
-          err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &t)
+          err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &s)
 
             if err != nil {
                 // Deserialization failed
             }
-            fmt.Printf("%#v.\n", t)
-
-
-          //switch 
-
-        logResult.All_query_result_length = searchResult.Hits.TotalHits
-        //fmt.Printf("Found a total of %d tweets\n", searchResult.Hits.TotalHits)
-        logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
-        // Iterate through results
-        for _, hit := range searchResult.Hits.Hits {
-            // hit.Index contains the name of the index
-
-            // Deserialize hit.Source into a Tweet (could also be just a map[string]interface{}).
             
-            err := json.Unmarshal(*hit.Source, &t)
 
-            if err != nil {
-                // Deserialization failed
+          appType = s.Type 
+          fmt.Printf("App type:%s.\n", appType)
+          if strings.Contains(appType, "nginx"){
+              t := tNginx
+              logResult := logNginxResult
+
+              logResult.Return_code = 200
+              logResult.All_query_result_length = searchResult.Hits.TotalHits
+              logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
+              for _, hit := range searchResult.Hits.Hits {            
+                  err := json.Unmarshal(*hit.Source, &t)
+                  if err != nil {
+                  }
+                  logResult.Query_result = append(logResult.Query_result, t)
+              }
+              c.JSON(200, logResult)
+            }else if strings.Contains(appType, "mysql") {
+              t := tMysql
+              logResult := logMysqlResult
+              logResult.Return_code = 200
+              logResult.All_query_result_length = searchResult.Hits.TotalHits
+              logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
+              for _, hit := range searchResult.Hits.Hits {            
+                  err := json.Unmarshal(*hit.Source, &t)
+                  if err != nil {
+                  }
+                  logResult.Query_result = append(logResult.Query_result, t)
+              }
+              c.JSON(200, logResult)
+
+            }else if strings.Contains(appType, "redis"){
+              t := tRedis
+              logResult := logRedisResult
+              logResult.Return_code = 200
+              logResult.All_query_result_length = searchResult.Hits.TotalHits
+              logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
+              for _, hit := range searchResult.Hits.Hits {            
+                  err := json.Unmarshal(*hit.Source, &t)
+                  if err != nil {
+                  }
+                  logResult.Query_result = append(logResult.Query_result, t)
+              }
+              c.JSON(200, logResult)
+
+            }else {
+              c.JSON(200, QueryNoResult)
+              return
             }
-            logResult.Query_result = append(logResult.Query_result, t)
-            // Work with tweet
-           // fmt.Print(t)
-          //  fmt.Printf("%v\n", t)
-            //fmt.Println(t.Data.Log_info.Message)
-        }
-
-        c.JSON(200, logResult)
-
+        
       } else {
-          // No hits
           c.JSON(200, QueryNoResult)
       }
 

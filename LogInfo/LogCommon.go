@@ -43,7 +43,26 @@ type SQueryContainerLogResult struct {
 }
 
 
+type SQueryNginxLogResult struct {
+  Return_code int64 `json:"return_code"`
+  Current_query_result_length int64 `json:"current_query_result_length"`
+  All_query_result_length int64 `json:"all_query_result_length"`
+  Query_result [] SNginxLogger `json:"query_result"`
+}
 
+type SQueryMysqlLogResult struct {
+  Return_code int64 `json:"return_code"`
+  Current_query_result_length int64 `json:"current_query_result_length"`
+  All_query_result_length int64 `json:"all_query_result_length"`
+  Query_result [] SMysqlLogger `json:"query_result"`
+}
+
+type SQueryRedisLogResult struct {
+  Return_code int64 `json:"return_code"`
+  Current_query_result_length int64 `json:"current_query_result_length"`
+  All_query_result_length int64 `json:"all_query_result_length"`
+  Query_result [] SRedisLogger `json:"query_result"`
+}
 
 type SNginxLogger struct {
     Type  string `json:"type"`
