@@ -325,15 +325,16 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	}
 
 }
+
 func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
 	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
 	pageIndex := 0
 	lengthPerPage := 50
+
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
 		return
-
 	}
 
 	if queryInfo.Container_uuid == "" || queryInfo.Start_time == "" || queryInfo.End_time == "" || queryInfo.Page_index == "" || queryInfo.Length_per_page == "" {
@@ -351,23 +352,12 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 		return
 	}
 
-	/* count, err := client.Count("fluentd_from_container_to_es.log-2016.12.01").Do(context.TODO())
-	   if err != nil {
-	     fmt.Printf("error:%#v.\n",err)
-	   }
-
-	   fmt.Printf("No condition got %d.\n",  count)
-
-
-	   fmt.Println(queryInfo.Container_uuid)*/
-
 	q := elastic.NewBoolQuery()
 
-	//      q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
-
+	//	q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
 	q = q.Must(elastic.NewMatchQuery("type", "custom_log"))
-	//q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
-	//q = q.Should(elastic.NewTermQuery("type", "log_container"))
+	//	q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
+	//	q = q.Should(elastic.NewTermQuery("type", "log_container"))
 	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
 	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
@@ -382,13 +372,14 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	if err != nil {
 		c.JSON(200, ErrElasticsearch)
 		return
-
 	}
+
 	data, err := json.Marshal(src)
 	if err != nil {
 		c.JSON(200, ErrElasticsearch)
 		return
 	}
+
 	ss := string(data)
 	fmt.Println(ss)
 
@@ -424,19 +415,12 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
 	if len(searchResult.Hits.Hits) > 0 {
 
-		//		err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &s)
-
-		//		if err != nil {
-		//			// Deserialization failed
-		//		}
-
-		//		appType = s.Type
-
 		var d interface{}
 		err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &d)
 		if err != nil {
 			// Deserialization failed
 		}
+
 		appType = (d.(map[string]interface{}))["type"].(string)
 		fmt.Printf("App type:%s.\n", appType)
 
@@ -490,7 +474,6 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	} else {
 		c.JSON(200, QueryNoResult)
 	}
-
 }
 
 func QueryCustomLogFile(c *gin.Context, queryInfo Common.QueryLogJson) {
