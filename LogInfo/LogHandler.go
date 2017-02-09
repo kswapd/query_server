@@ -113,7 +113,7 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	s := string(data)
 	fmt.Println(s)
 
-	search := client.Search().Index("container_to_es.log-*") //.Type("film")
+	search := client.Search().Index("container_to_es.log*") //.Type("film")
 	search = search.Query(q)                                 //.Filter(andFilter)
 
 	search = search.Sort("data.log_info.log_time", false)
@@ -227,7 +227,7 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	ss := string(data)
 	fmt.Println(ss)
 
-	search := client.Search().Index("app_*_to_es.log-*") //.Type("film")
+	search := client.Search().Index("app_*_to_es.log*") //.Type("film")
 	search = search.Query(q)                             //.Filter(andFilter)
 
 	search = search.Sort("data.log_info.log_time", false)
@@ -407,7 +407,7 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	ss := string(data)
 	fmt.Println(ss)
 
-	search := client.Search().Index("custom_log_to_es.log-*") //.Type("film")
+	search := client.Search().Index("custom_log_to_es.log*") //.Type("film")
 	search = search.Query(q)                                  //.Filter(andFilter)
 
 	search = search.Sort("data.log_info.log_time", false)
@@ -470,7 +470,7 @@ func QueryLogInfo(c *gin.Context) {
 	case "app":
 		QueryAppLog(c, queryInfo)
 	case "custom_log":
-		QueryContainerLog(c, queryInfo)
+		QueryCustomLog(c, queryInfo)
 	default:
 		c.JSON(200, InvalidQuery)
 		return
