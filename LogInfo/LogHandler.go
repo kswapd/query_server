@@ -324,7 +324,7 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
 }
 
-func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
+func QueryCustomLogFile(c *gin.Context, queryInfo Common.QueryLogJson) {
 	fmt.Println("custom...")
 	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
 	pageIndex := 0
@@ -350,6 +350,8 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 		return
 	}
 
+	//	elastic.NewTermsAggregation()
+
 	q := elastic.NewBoolQuery()
 
 	//      q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
@@ -361,7 +363,7 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
 	fmt.Println(queryInfo.File_name)
-	q = q.Must(elastic.NewMatchQuery("data.app_file", queryInfo.File_name))
+	//	q = q.Must(elastic.NewMatchQuery("data.app_file", queryInfo.File_name))
 
 	// q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
 
@@ -401,38 +403,20 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
 	fmt.Printf("Found a total of %d ,%d result, took %d milliseconds.\n", searchResult.TotalHits(), searchResult.Hits.TotalHits, searchResult.TookInMillis)
 
-	var appType string
-	//	var s SContainerLogger
-
-	//	var logNginxResult SQueryNginxLogResult
-	//	var logRedisResult SQueryRedisLogResult
-	//	var logMysqlResult SQueryMysqlLogResult
-
-	//var t SNginxLogger
-	//var t interface{}
-	//	var tNginx SNginxLogger
-	//	var tMysql SMysqlLogger
-	//	var tRedis SRedisLogger
-
-	/*logResult.Return_code = 200
-	  logResult.Current_query_result_length = 10
-	  logResult.All_query_result_length = 100*/
+	var customLogResult SQueryCustomLogResult
+	var customLogger SCustomLogger
 
 	if len(searchResult.Hits.Hits) > 0 {
+		customLogResult.Return_code = 200
 
-		//		err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &s)
-
-		var sJson interface{}
-		err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &sJson)
-		//		fmt.Println(sJson.(map[string]interface{})["type"])
-
-		if err != nil {
-			// Deserialization failed
+		for _, hit := range searchResult.Hits.Hits {
+			err := json.Unmarshal(*hit.Source, &customLogger)
+			if err != nil {
+				//解码异常处理
+			}
+			customLogResult.Query_result = append(customLogResult.Query_result, customLogger)
 		}
-
-		appType = sJson.(map[string]interface{})["type"].(string)
-		fmt.Printf("App type: %s.\n", appType)
-
+		c.JSON(200, customLogResult)
 	} else {
 		c.JSON(200, QueryNoResult)
 	}
@@ -464,7 +448,7 @@ func QueryLogInfo(c *gin.Context) {
 	case "app":
 		QueryAppLog(c, queryInfo)
 	case "custom_log":
-		QueryCustomLog(c, queryInfo)
+		QueryCustomLogFile(c, queryInfo)
 	default:
 		c.JSON(200, InvalidQuery)
 		return

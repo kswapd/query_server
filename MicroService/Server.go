@@ -10,8 +10,8 @@ func Start() {
 	r.POST("/queryLogInfo", OnQueryLogInfo)
 	r.GET("/queryLogInfo", OnQueryLogInfo)
 
-	r.GET("queryCustomLog", OnQueryLogInfo)
-	r.POST("queryCustomLog", OnQueryLogInfo)
+	r.GET("queryCustomLogFile", OnQueryLogInfo)
+	r.POST("queryCustomLogFile", OnQueryLogInfo)
 
 	r.POST("/queryMonitorInfo", OnQueryMonitorInfo)
 	r.GET("/queryMonitorInfo", OnQueryMonitorInfo)
