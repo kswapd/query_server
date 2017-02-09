@@ -1,699 +1,495 @@
 package LogInfo
-
 import (
-	"fmt"
-	"query_server/Common"
-
-	"github.com/gin-gonic/gin"
-	// "log"
-	"encoding/json"
-	"strconv"
-	"strings"
-
-	"golang.org/x/net/context"
-	elastic "gopkg.in/olivere/elastic.v5"
+    "fmt"
+    "github.com/gin-gonic/gin"
+    "query_server/Common"
+   // "log"
+    "strconv"
+    "strings"
+    "encoding/json"
+    elastic "gopkg.in/olivere/elastic.v5"
+    "golang.org/x/net/context"
 )
 
-const (
-	ESUrl string = "http://223.202.32.59:8056"
+const(
+  ESUrl string = "http://192.168.100.224:8056"
 )
 
 var (
-	QueryNoResult = gin.H{
-		"return_code": 400,
-		"err_info":    "query not found",
-	}
-	ConnElasticsearchErr = gin.H{
-		"return_code": 401,
-		"err_info":    "elastic search connection error",
-	}
-	ErrElasticsearch = gin.H{
-		"return_code": 402,
-		"err_info":    "elastic search error",
-	}
-	InvalidQuery = gin.H{
-		"return_code": 403,
-		"err_info":    "invalid query",
-	}
 
-	/* m3 := map[string]string{
-	   "a": "aa",
-	   "b": "bb",
-	 }*/
+    QueryNoResult = gin.H{
+            "return_code":  400,
+            "err_info":"query not found",
+      }
+      ConnElasticsearchErr = gin.H{
+            "return_code":  401,
+            "err_info":"elastic search connection error",
+      }
+      ErrElasticsearch = gin.H{
+            "return_code":  402,
+            "err_info":"elastic search error",
+      }
+      InvalidQuery = gin.H{
+            "return_code":  403,
+            "err_info":"invalid query",
+      }
+
+     /* m3 := map[string]string{
+        "a": "aa",
+        "b": "bb",
+      }*/
 
 )
-
 func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
-	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
-	pageIndex := 0
-	lengthPerPage := 50
-	if err != nil {
-		c.JSON(200, ConnElasticsearchErr)
-		return
+   client, err := elastic.NewClient(elastic.SetURL(ESUrl))
+   pageIndex := 0
+   lengthPerPage := 50
+      if err != nil {
+          c.JSON(200, ConnElasticsearchErr)
+          return
 
-	}
+      }  
 
-	if queryInfo.Container_uuid == "" || queryInfo.Start_time == "" || queryInfo.End_time == "" || queryInfo.Page_index == "" || queryInfo.Length_per_page == "" {
-		c.JSON(200, InvalidQuery)
-		return
-	}
+      if queryInfo.Container_uuid == "" || queryInfo.Start_time == "" || queryInfo.End_time == "" || queryInfo.Page_index == "" || queryInfo.Length_per_page == ""{
+          c.JSON(200, InvalidQuery)
+          return
+      }
 
-	if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
+      if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
+          c.JSON(200, InvalidQuery)
+          return
+      }
 
-	if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
+      if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
+          c.JSON(200, InvalidQuery)
+          return
+      }
 
-	/* count, err := client.Count("fluentd_from_container_to_es.log-2016.12.01").Do(context.TODO())
-	   if err != nil {
-	     fmt.Printf("error:%#v.\n",err)
-	   }
+     /* count, err := client.Count("fluentd_from_container_to_es.log-2016.12.01").Do(context.TODO())
+      if err != nil {
+        fmt.Printf("error:%#v.\n",err)
+      }
+           
+      fmt.Printf("No condition got %d.\n",  count)
 
-	   fmt.Printf("No condition got %d.\n",  count)
+
+      fmt.Println(queryInfo.Container_uuid)*/
 
 
-	   fmt.Println(queryInfo.Container_uuid)*/
 
-	q := elastic.NewBoolQuery()
 
-	//      q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
 
-	//	q = q.Must(elastic.NewMatchQuery("type", queryInfo.Query_type))
-	//q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
-	//q = q.Should(elastic.NewTermQuery("type", "log_container"))
-	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
-	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
+      q := elastic.NewBoolQuery()
+      
 
-	// q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
+//      q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
 
-	//dt := elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time)
-	// q = q.Must(elastic.NewRangeQuery("data.log_infoq = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid)).log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
+     // q = q.Must(elastic.NewMatchQuery("type", "log_file_container"))
+      //q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
+      //q = q.Should(elastic.NewTermQuery("type", "log_container"))
+      q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+      q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
-	src, err := q.Source()
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
+      if queryInfo.Query_content != "" {
+        qSub := elastic.NewBoolQuery()
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.source", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.message", queryInfo.Query_content))
+        q = q.Must(qSub)
+      }
 
-	}
-	data, err := json.Marshal(src)
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-	s := string(data)
-	fmt.Println(s)
+     // q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
 
-	search := client.Search().Index("fluentd_from_container_to_es.log-*") //.Type("film")
-	search = search.Query(q)                                              //.Filter(andFilter)
+      //dt := elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time)
+     // q = q.Must(elastic.NewRangeQuery("data.log_infoq = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid)).log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
-	search = search.From(pageIndex - 1).Size(lengthPerPage)
+      src, err := q.Source()
+      if err != nil {
+          c.JSON(200, ErrElasticsearch)
+          return
 
-	searchResult, err := search.Do(context.TODO())
+      }  
+      data, err := json.Marshal(src)
+      if err != nil {
+          c.JSON(200, ErrElasticsearch)
+          return
+      }  
+      s := string(data)
+      fmt.Println(s)
+      
+      search := client.Search().Index("container_to_es.log-*")//.Type("film")
+      search = search.Query(q)//.Filter(andFilter)
 
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-	fmt.Printf("Found a total of %d ,%d result, took %d milliseconds.\n", searchResult.TotalHits(), searchResult.Hits.TotalHits, searchResult.TookInMillis)
+      search = search.Sort("data.log_info.log_time", false)
+      search = search.From((pageIndex-1)*lengthPerPage).Size(lengthPerPage)
+      
+      searchResult, err := search.Do(context.TODO())
 
-	var logResult SQueryContainerLogResult
-	var t SContainerLogger
-	logResult.Return_code = 200
-	logResult.Current_query_result_length = 10
-	logResult.All_query_result_length = 100
+      if err != nil {
+          c.JSON(200, ErrElasticsearch)
+          return
+      }
+      fmt.Printf("Found a total of %d ,%d result, took %d milliseconds.\n", searchResult.TotalHits(),searchResult.Hits.TotalHits, searchResult.TookInMillis)
 
-	if len(searchResult.Hits.Hits) > 0 {
-		logResult.All_query_result_length = searchResult.Hits.TotalHits
-		//fmt.Printf("Found a total of %d tweets\n", searchResult.Hits.TotalHits)
-		logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
-		// Iterate through results
-		for _, hit := range searchResult.Hits.Hits {
-			// hit.Index contains the name of the index
 
-			// Deserialize hit.Source into a Tweet (could also be just a map[string]interface{}).
 
-			err := json.Unmarshal(*hit.Source, &t)
 
-			if err != nil {
-				// Deserialization failed
-			}
-			logResult.Query_result = append(logResult.Query_result, t)
-			// Work with tweet
-			// fmt.Print(t)
-			//  fmt.Printf("%v\n", t)
-			//fmt.Println(t.Data.Log_info.Message)
-		}
+      var logResult SQueryContainerLogResult
+      var t SContainerLogger
+      logResult.Return_code = 200
+      logResult.Current_query_result_length = 10
+      logResult.All_query_result_length = 100
 
-		c.JSON(200, logResult)
+      if len(searchResult.Hits.Hits) > 0 {
+        logResult.All_query_result_length = searchResult.Hits.TotalHits
+        //fmt.Printf("Found a total of %d tweets\n", searchResult.Hits.TotalHits)
+        logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
+        // Iterate through results
+        for _, hit := range searchResult.Hits.Hits {
+            // hit.Index contains the name of the index
 
-	} else {
-		// No hits
-		c.JSON(200, QueryNoResult)
-	}
+            // Deserialize hit.Source into a Tweet (could also be just a map[string]interface{}).
+            
+            err := json.Unmarshal(*hit.Source, &t)
+
+            if err != nil {
+                // Deserialization failed
+            }
+            logResult.Query_result = append(logResult.Query_result, t)
+            // Work with tweet
+           // fmt.Print(t)
+          //  fmt.Printf("%v\n", t)
+            //fmt.Println(t.Data.Log_info.Message)
+        }
+
+        c.JSON(200, logResult)
+
+      } else {
+          // No hits
+          c.JSON(200, QueryNoResult)
+      }
 
 }
 
 func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
-	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
-	pageIndex := 0
-	lengthPerPage := 50
-	if err != nil {
-		c.JSON(200, ConnElasticsearchErr)
-		return
+   client, err := elastic.NewClient(elastic.SetURL(ESUrl))
+   pageIndex := 0
+   lengthPerPage := 50
+      if err != nil {
+          c.JSON(200, ConnElasticsearchErr)
+          return
 
-	}
+      }  
 
-	if queryInfo.Container_uuid == "" || queryInfo.Start_time == "" || queryInfo.End_time == "" || queryInfo.Page_index == "" || queryInfo.Length_per_page == "" {
-		c.JSON(200, InvalidQuery)
-		return
-	}
+      if queryInfo.Container_uuid == "" || queryInfo.Start_time == "" || queryInfo.End_time == "" || queryInfo.Page_index == "" || queryInfo.Length_per_page == ""{
+          c.JSON(200, InvalidQuery)
+          return
+      }
 
-	if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
+      if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
+          c.JSON(200, InvalidQuery)
+          return
+      }
 
-	if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
+      if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
+          c.JSON(200, InvalidQuery)
+          return
+      }
 
-	/* count, err := client.Count("fluentd_from_container_to_es.log-2016.12.01").Do(context.TODO())
-	   if err != nil {
-	     fmt.Printf("error:%#v.\n",err)
-	   }
+     /* count, err := client.Count("fluentd_from_container_to_es.log-2016.12.01").Do(context.TODO())
+      if err != nil {
+        fmt.Printf("error:%#v.\n",err)
+      }
+           
+      fmt.Printf("No condition got %d.\n",  count)
 
-	   fmt.Printf("No condition got %d.\n",  count)
+
+      fmt.Println(queryInfo.Container_uuid)*/
 
 
-	   fmt.Println(queryInfo.Container_uuid)*/
 
-	q := elastic.NewBoolQuery()
 
-	//      q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
 
-	//q = q.Must(elastic.NewMatchQuery("type", "log_file_container"))
-	//q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
-	//q = q.Should(elastic.NewTermQuery("type", "log_container"))
-	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
-	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
+      q := elastic.NewBoolQuery()
+      
 
-	//	q = q.Must(elastic.NewMatchQuery("data.app_file", queryInfo.File_name))
+//      q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
 
-	// q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
+      //q = q.Must(elastic.NewMatchQuery("type", "log_file_container"))
+      //q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
+      //q = q.Should(elastic.NewTermQuery("type", "log_container"))
+      q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+      q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
-	//dt := elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time)
-	// q = q.Must(elastic.NewRangeQuery("data.log_infoq = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid)).log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
-	src, err := q.Source()
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
 
-	}
-	data, err := json.Marshal(src)
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-	ss := string(data)
-	fmt.Println(ss)
 
-	search := client.Search().Index("fluentd_from_*_to_es.log-*") //.Type("film")
-	search = search.Query(q)                                      //.Filter(andFilter)
+     // q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
 
-	search = search.From(pageIndex - 1).Size(lengthPerPage)
+      //dt := elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time)
+     // q = q.Must(elastic.NewRangeQuery("data.log_infoq = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid)).log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
-	searchResult, err := search.Do(context.TODO())
+      src, err := q.Source()
+      if err != nil {
+          c.JSON(200, ErrElasticsearch)
+          return
 
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-	fmt.Printf("Found a total of %d ,%d result, took %d milliseconds.\n", searchResult.TotalHits(), searchResult.Hits.TotalHits, searchResult.TookInMillis)
+      }  
+      data, err := json.Marshal(src)
+      if err != nil {
+          c.JSON(200, ErrElasticsearch)
+          return
+      }  
+      ss := string(data)
+      fmt.Println(ss)
+      
+      search := client.Search().Index("app_*_to_es.log-*")//.Type("film")
+      search = search.Query(q)//.Filter(andFilter)
 
-	var appType string
-	//	var s SContainerLogger
+      search = search.Sort("data.log_info.log_time", false)
+      search = search.From((pageIndex-1)*lengthPerPage).Size(lengthPerPage)
+      
 
-	var logNginxResult SQueryNginxLogResult
-	var logRedisResult SQueryRedisLogResult
-	var logMysqlResult SQueryMysqlLogResult
+      searchResult, err := search.Do(context.TODO())
 
-	//var t SNginxLogger
-	//var t interface{}
-	var tNginx SNginxLogger
-	var tMysql SMysqlLogger
-	var tRedis SRedisLogger
+      if err != nil {
+          c.JSON(200, ErrElasticsearch)
+          return
+      }
+      fmt.Printf("Found a total of %d ,%d result, took %d milliseconds.\n", searchResult.TotalHits(),searchResult.Hits.TotalHits, searchResult.TookInMillis)
 
-	/*logResult.Return_code = 200
-	  logResult.Current_query_result_length = 10
-	  logResult.All_query_result_length = 100*/
 
-	if len(searchResult.Hits.Hits) > 0 {
 
-		//		err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &s)
+      var appType string
+      var s SContainerLogger
 
-		//		if err != nil {
-		//			// Deserialization failed
-		//		}
+      var logNginxResult SQueryNginxLogResult
+      var logRedisResult SQueryRedisLogResult
+      var logMysqlResult SQueryMysqlLogResult
+      
 
-		//		appType = s.Type
+      //var t SNginxLogger
+      //var t interface{}
+      var tNginx SNginxLogger
+      var tMysql SMysqlLogger
+      var tRedis SRedisLogger
 
-		var d interface{}
-		err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &d)
-		if err != nil {
-			// Deserialization failed
-		}
-		appType = (d.(map[string]interface{}))["type"].(string)
-		fmt.Printf("App type:%s.\n", appType)
+      /*logResult.Return_code = 200
+      logResult.Current_query_result_length = 10
+      logResult.All_query_result_length = 100*/
 
-		if strings.Contains(appType, "nginx") {
-			t := tNginx
-			logResult := logNginxResult
+      if len(searchResult.Hits.Hits) > 0 {
 
-			logResult.Return_code = 200
-			logResult.All_query_result_length = searchResult.Hits.TotalHits
-			logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
-			for _, hit := range searchResult.Hits.Hits {
-				err := json.Unmarshal(*hit.Source, &t)
-				if err != nil {
-				}
-				logResult.Query_result = append(logResult.Query_result, t)
-			}
-			c.JSON(200, logResult)
-		} else if strings.Contains(appType, "mysql") {
-			t := tMysql
-			logResult := logMysqlResult
-			logResult.Return_code = 200
-			logResult.All_query_result_length = searchResult.Hits.TotalHits
-			logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
-			for _, hit := range searchResult.Hits.Hits {
-				err := json.Unmarshal(*hit.Source, &t)
-				if err != nil {
-				}
-				logResult.Query_result = append(logResult.Query_result, t)
-			}
-			c.JSON(200, logResult)
+          err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &s)
 
-		} else if strings.Contains(appType, "redis") {
-			t := tRedis
-			logResult := logRedisResult
-			logResult.Return_code = 200
-			logResult.All_query_result_length = searchResult.Hits.TotalHits
-			logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
-			for _, hit := range searchResult.Hits.Hits {
-				err := json.Unmarshal(*hit.Source, &t)
-				if err != nil {
-				}
-				logResult.Query_result = append(logResult.Query_result, t)
-			}
-			c.JSON(200, logResult)
+            if err != nil {
+                // Deserialization failed
+            }
+            
 
-		} else {
-			c.JSON(200, QueryNoResult)
-			return
-		}
+          appType = s.Type 
+          fmt.Printf("App type:%s.\n", appType)
+          if strings.Contains(appType, "nginx"){
+              t := tNginx
+              logResult := logNginxResult
 
-	} else {
-		c.JSON(200, QueryNoResult)
-	}
+              logResult.Return_code = 200
+              logResult.All_query_result_length = searchResult.Hits.TotalHits
+              logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
+              for _, hit := range searchResult.Hits.Hits {            
+                  err := json.Unmarshal(*hit.Source, &t)
+                  if err != nil {
+                  }
+                  logResult.Query_result = append(logResult.Query_result, t)
+              }
+              c.JSON(200, logResult)
+            }else if strings.Contains(appType, "mysql") {
+              t := tMysql
+              logResult := logMysqlResult
+              logResult.Return_code = 200
+              logResult.All_query_result_length = searchResult.Hits.TotalHits
+              logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
+              for _, hit := range searchResult.Hits.Hits {            
+                  err := json.Unmarshal(*hit.Source, &t)
+                  if err != nil {
+                  }
+                  logResult.Query_result = append(logResult.Query_result, t)
+              }
+              c.JSON(200, logResult)
+
+            }else if strings.Contains(appType, "redis"){
+              t := tRedis
+              logResult := logRedisResult
+              logResult.Return_code = 200
+              logResult.All_query_result_length = searchResult.Hits.TotalHits
+              logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
+              for _, hit := range searchResult.Hits.Hits {            
+                  err := json.Unmarshal(*hit.Source, &t)
+                  if err != nil {
+                  }
+                  logResult.Query_result = append(logResult.Query_result, t)
+              }
+              c.JSON(200, logResult)
+
+            }else {
+              c.JSON(200, QueryNoResult)
+              return
+            }
+        
+      } else {
+          c.JSON(200, QueryNoResult)
+      }
 
 }
 
-func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
-	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
-	pageIndex := 0
-	lengthPerPage := 50
-
-	if err != nil {
-		c.JSON(200, ConnElasticsearchErr)
-		return
-	}
-
-	if queryInfo.Container_uuid == "" || queryInfo.Start_time == "" || queryInfo.End_time == "" || queryInfo.Page_index == "" || queryInfo.Length_per_page == "" {
-		c.JSON(200, InvalidQuery)
-		return
-	}
-
-	if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
-
-	if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
-
-	q := elastic.NewBoolQuery()
-
-	//	q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
-	q = q.Must(elastic.NewMatchQuery("type", "custom_log"))
-	//	q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
-	//	q = q.Should(elastic.NewTermQuery("type", "log_container"))
-	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
-	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
-
-	q = q.Must(elastic.NewMatchQuery("data.app_file", queryInfo.File_name))
-
-	// q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
-
-	//dt := elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time)
-	// q = q.Must(elastic.NewRangeQuery("data.log_infoq = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid)).log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
-
-	src, err := q.Source()
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-
-	data, err := json.Marshal(src)
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-
-	ss := string(data)
-	fmt.Println(ss)
-
-	search := client.Search().Index("fluentd_from_*_to_es.log-*") //.Type("film")
-	search = search.Query(q)                                      //.Filter(andFilter)
-
-	search = search.From(pageIndex - 1).Size(lengthPerPage)
-
-	searchResult, err := search.Do(context.TODO())
-
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-	fmt.Printf("Found a total of %d ,%d result, took %d milliseconds.\n", searchResult.TotalHits(), searchResult.Hits.TotalHits, searchResult.TookInMillis)
-
-	var appType string
-	//	var s SContainerLogger
-
-	var logNginxResult SQueryNginxLogResult
-	var logRedisResult SQueryRedisLogResult
-	var logMysqlResult SQueryMysqlLogResult
-
-	//var t SNginxLogger
-	//var t interface{}
-	var tNginx SNginxLogger
-	var tMysql SMysqlLogger
-	var tRedis SRedisLogger
-
-	/*logResult.Return_code = 200
-	  logResult.Current_query_result_length = 10
-	  logResult.All_query_result_length = 100*/
-
-	if len(searchResult.Hits.Hits) > 0 {
-
-		var d interface{}
-		err := json.Unmarshal(*searchResult.Hits.Hits[0].Source, &d)
-		if err != nil {
-			// Deserialization failed
-		}
-
-		appType = (d.(map[string]interface{}))["type"].(string)
-		fmt.Printf("App type:%s.\n", appType)
-
-		if strings.Contains(appType, "nginx") {
-			t := tNginx
-			logResult := logNginxResult
-
-			logResult.Return_code = 200
-			logResult.All_query_result_length = searchResult.Hits.TotalHits
-			logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
-			for _, hit := range searchResult.Hits.Hits {
-				err := json.Unmarshal(*hit.Source, &t)
-				if err != nil {
-				}
-				logResult.Query_result = append(logResult.Query_result, t)
-			}
-			c.JSON(200, logResult)
-		} else if strings.Contains(appType, "mysql") {
-			t := tMysql
-			logResult := logMysqlResult
-			logResult.Return_code = 200
-			logResult.All_query_result_length = searchResult.Hits.TotalHits
-			logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
-			for _, hit := range searchResult.Hits.Hits {
-				err := json.Unmarshal(*hit.Source, &t)
-				if err != nil {
-				}
-				logResult.Query_result = append(logResult.Query_result, t)
-			}
-			c.JSON(200, logResult)
-
-		} else if strings.Contains(appType, "redis") {
-			t := tRedis
-			logResult := logRedisResult
-			logResult.Return_code = 200
-			logResult.All_query_result_length = searchResult.Hits.TotalHits
-			logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
-			for _, hit := range searchResult.Hits.Hits {
-				err := json.Unmarshal(*hit.Source, &t)
-				if err != nil {
-				}
-				logResult.Query_result = append(logResult.Query_result, t)
-			}
-			c.JSON(200, logResult)
-
-		} else {
-			c.JSON(200, QueryNoResult)
-			return
-		}
-
-	} else {
-		c.JSON(200, QueryNoResult)
-	}
-}
-
-func QueryCustomLogFile(c *gin.Context, queryInfo Common.QueryLogJson) {
-	fmt.Println("custom...")
-	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
-	pageIndex := 0
-	lengthPerPage := 50
-
-	if err != nil {
-		c.JSON(200, ConnElasticsearchErr)
-		return
-	}
-
-	if queryInfo.Container_uuid == "" || queryInfo.Start_time == "" || queryInfo.End_time == "" || queryInfo.Page_index == "" || queryInfo.Length_per_page == "" {
-		c.JSON(200, InvalidQuery)
-		return
-	}
-
-	if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
-
-	if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
-
-	//	elastic.NewTermsAggregation()
-	//	ta := elastic.NewTermsAggregation() //terms aggregation，
-	//	ta.Field("app_file")
-
-	termAggregation := elastic.NewTermsAggregation()
-	termAggregation.Field("app_file")
-
-	q := elastic.NewBoolQuery()
-
-	//      q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
-
-	q = q.Must(elastic.NewMatchQuery("type", queryInfo.Query_type))
-	//q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
-	//q = q.Should(elastic.NewTermQuery("type", "log_container"))
-	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
-	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
-
-	fmt.Println(queryInfo.File_name)
-	//	q = q.Must(elastic.NewMatchQuery("data.app_file", queryInfo.File_name))
-
-	// q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
-
-	//dt := elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time)
-	// q = q.Must(elastic.NewRangeQuery("data.log_infoq = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid)).log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
-
-	src, err := q.Source()
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-
-	}
-
-	data, err := json.Marshal(src)
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-	ss := string(data)
-	fmt.Println("ss:", ss)
-
-	search := client.Search().Index("fluentd_from_*_to_es.log-*") //.Type("film")
-	search = search.Query(q)                                      //.Filter(andFilter)
-
-	search = search.From(pageIndex - 1).Size(lengthPerPage)
-
-	searchResult, err := search.Do(context.TODO())
-
-	//	fmt.Println()
-
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-
-	//	fmt.Println(searchResult.Hits.Hits[0].Source)
-
-	fmt.Printf("Found a total of %d ,%d result, took %d milliseconds.\n", searchResult.TotalHits(), searchResult.Hits.TotalHits, searchResult.TookInMillis)
-
-	var customLogResult SQueryCustomLogResult
-	var customLogger SCustomLogger
-
-	if len(searchResult.Hits.Hits) > 0 {
-		customLogResult.Return_code = 200
-
-		for _, hit := range searchResult.Hits.Hits {
-			err := json.Unmarshal(*hit.Source, &customLogger)
-			if err != nil {
-				//解码异常处理
-			}
-			customLogResult.Query_result = append(customLogResult.Query_result, customLogger)
-		}
-		c.JSON(200, customLogResult)
-	} else {
-		c.JSON(200, QueryNoResult)
-	}
-}
 
 func QueryLogInfo(c *gin.Context) {
-	var queryInfo Common.QueryLogJson
+      var queryInfo Common.QueryLogJson
 
-	//  c.BindJSON(&queryInfo)
+  //  c.BindJSON(&queryInfo)
+ 
+  queryInfo.Query_type = c.Query("query_type")
+  queryInfo.Container_uuid = c.Query("container_uuid")
+  queryInfo.Environment_id = c.Query("environment_id")
+  queryInfo.Start_time = c.Query("start_time")
+  queryInfo.End_time = c.Query("end_time")
+  queryInfo.Query_content = c.Query("query_content")
+  queryInfo.Length_per_page = c.Query("length_per_page")
+  queryInfo.Page_index = c.Query("page_index")
+	    //c.BindJSON(&queryInfo)
+	    //c.JSON(200, gin.H{"type": queryInfo.Query_type})
 
-	queryInfo.Query_type = c.Query("query_type")
-	queryInfo.Container_uuid = c.Query("container_uuid")
-	queryInfo.Environment_id = c.Query("environment_id")
-	queryInfo.Start_time = c.Query("start_time")
-	queryInfo.End_time = c.Query("end_time")
-	queryInfo.Query_content = c.Query("query_content")
-	queryInfo.Length_per_page = c.Query("length_per_page")
-	queryInfo.Page_index = c.Query("page_index")
 
-	if fileName := c.Query("file_name"); fileName != "" {
-		queryInfo.File_name = c.Query("file_name")
-	}
 
-	//c.BindJSON(&queryInfo)
-	//c.JSON(200, gin.H{"type": queryInfo.Query_type})
 
-	fmt.Printf("%#v.\n", queryInfo)
 
-	switch queryInfo.Query_type {
-	case "container":
-		QueryContainerLog(c, queryInfo)
-	case "app":
-		QueryAppLog(c, queryInfo)
-	case "custom_log":
-		QueryCustomLog(c, queryInfo)
-	default:
-		c.JSON(200, InvalidQuery)
-		return
-	}
 
-}
+  fmt.Printf("%#v.\n", queryInfo)
 
-func QueryCustomInfo(c *gin.Context) {
-	var queryInfo Common.QueryCustomJson
 
-	//  c.BindJSON(&queryInfo)
+  switch queryInfo.Query_type {
+    case "container":
+      QueryContainerLog(c, queryInfo)
+    case "app":
+      QueryAppLog(c, queryInfo)
+    case "custom_log":
+      QueryContainerLog(c, queryInfo)
+    default:
+      c.JSON(200, InvalidQuery)
+      return
+  }
 
-	queryInfo.Query_type = c.Query("query_type")
-	queryInfo.Container_uuid = c.Query("container_uuid")
-	queryInfo.Environment_id = c.Query("environment_id")
-	queryInfo.Start_time = c.Query("start_time")
-	queryInfo.End_time = c.Query("end_time")
-	queryInfo.Query_content = c.Query("query_content")
-	queryInfo.Length_per_page = c.Query("length_per_page")
-	queryInfo.Page_index = c.Query("page_index")
-	//c.BindJSON(&queryInfo)
-	//c.JSON(200, gin.H{"type": queryInfo.Query_type})
 
-	fmt.Printf("%#v.\n", queryInfo)
 
-	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
-	if err != nil {
-		c.JSON(200, ConnElasticsearchErr)
-		return
+     
+	    
+ }
 
-	}
 
-	if queryInfo.Container_uuid == "" {
-		c.JSON(200, InvalidQuery)
-		return
-	}
-	// q := elastic.NewBoolQuery()
-	q := elastic.NewMatchAllQuery()
-	/*q := elastic.NewBoolQuery()
-	  q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
-	  q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))*/
 
-	//agg := elastic.NewTermsAggregation().Field("data.app_file")
 
-	/* src, err := q.Source()
-	   if err != nil {
-	       c.JSON(200, ErrElasticsearch)
-	       return
 
-	   }
-	   data, err := json.Marshal(src)
-	   if err != nil {
-	       c.JSON(200, ErrElasticsearch)
-	       return
-	   }
-	   s := string(data)
-	   fmt.Println(s)*/
-	//all := NewMatchAllQuery()
-	search := client.Search().Index("fluentd_from_container_to_es.log-*").Query(q) //.Pretty(true)
-	// search = search.Query(q)//.Filter(andFilter)
-	agg := elastic.NewTermsAggregation().Field("container_uuid").Size(10).OrderByCountDesc()
-	search = search.Aggregation("genres", agg)
-	//search = search.From(pageIndex-1).Size(lengthPerPage)
-	// search = search.Sort("data.log_info.log_time", false)
-	searchResult, err := search.Do(context.TODO())
 
-	if err != nil {
-		c.JSON(200, ErrElasticsearch)
-		return
-	}
-	fmt.Printf("Found a total of %d ,%d result, took %d milliseconds.\n", searchResult.TotalHits(), searchResult.Hits.TotalHits, searchResult.TookInMillis)
 
-	fmt.Printf("%#v---\n", searchResult.Hits.Hits)
-	if aggret, found := searchResult.Aggregations.Terms("genres"); found {
-		fmt.Printf("ffff.\n")
+ func QueryCustomInfo(c *gin.Context) {
+      var queryInfo Common.QueryCustomJson
 
-		fmt.Printf("%d.\n", len(aggret.Buckets))
+  //  c.BindJSON(&queryInfo)
+ 
+  queryInfo.Query_type = c.Query("query_type")
+  queryInfo.Container_uuid = c.Query("container_uuid")
+  queryInfo.Environment_id = c.Query("environment_id")
+  queryInfo.Start_time = c.Query("start_time")
+  queryInfo.End_time = c.Query("end_time")
+  queryInfo.Query_content = c.Query("query_content")
+  queryInfo.Length_per_page = c.Query("length_per_page")
+  queryInfo.Page_index = c.Query("page_index")
+      //c.BindJSON(&queryInfo)
+      //c.JSON(200, gin.H{"type": queryInfo.Query_type})
 
-		fmt.Printf("%#v.\n", aggret)
-		Genres := make(map[string]int64)
-		for _, bucket := range aggret.Buckets {
-			Genres[bucket.Key.(string)] = bucket.DocCount
-			fmt.Printf("%s, %d...\n", bucket.Key.(string), bucket.DocCount)
-		}
-		//fmt.Printf("%#v...\n", *Genres)
-	}
+  fmt.Printf("%#v.\n", queryInfo)
 
-}
+
+
+
+
+
+
+
+
+    client, err := elastic.NewClient(elastic.SetURL(ESUrl))
+      if err != nil {
+          c.JSON(200, ConnElasticsearchErr)
+          return
+
+      }  
+
+      if queryInfo.Container_uuid == "" {
+          c.JSON(200, InvalidQuery)
+          return
+      }
+     // q := elastic.NewBoolQuery()
+      q := elastic.NewMatchAllQuery()
+      /*q := elastic.NewBoolQuery()
+      q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+      q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))*/
+
+
+      //agg := elastic.NewTermsAggregation().Field("data.app_file")
+      
+
+
+
+     /* src, err := q.Source()
+      if err != nil {
+          c.JSON(200, ErrElasticsearch)
+          return
+
+      }  
+      data, err := json.Marshal(src)
+      if err != nil {
+          c.JSON(200, ErrElasticsearch)
+          return
+      }  
+      s := string(data)
+      fmt.Println(s)*/
+      //all := NewMatchAllQuery()
+      search := client.Search().Index("fluentd_from_container_to_es.log-*").Query(q)//.Pretty(true)
+     // search = search.Query(q)//.Filter(andFilter)
+      agg := elastic.NewTermsAggregation().Field("container_uuid").Size(10).OrderByCountDesc()
+      search = search.Aggregation("genres", agg)
+      //search = search.From(pageIndex-1).Size(lengthPerPage)
+     // search = search.Sort("data.log_info.log_time", false)
+      searchResult, err := search.Do(context.TODO())
+
+      if err != nil {
+          c.JSON(200, ErrElasticsearch)
+          return
+      }
+      fmt.Printf("Found a total of %d ,%d result, took %d milliseconds.\n", searchResult.TotalHits(),searchResult.Hits.TotalHits, searchResult.TookInMillis)
+
+
+      fmt.Printf("%#v---\n", searchResult.Hits.Hits)
+      if aggret, found := searchResult.Aggregations.Terms("genres"); found {
+        fmt.Printf("ffff.\n")
+
+        fmt.Printf("%d.\n", len(aggret.Buckets))
+
+
+        fmt.Printf("%#v.\n", aggret)
+        Genres := make(map[string]int64)
+        for _, bucket := range aggret.Buckets {
+            Genres[bucket.Key.(string)] = bucket.DocCount
+            fmt.Printf("%s, %d...\n", bucket.Key.(string), bucket.DocCount)
+        }
+        //fmt.Printf("%#v...\n", *Genres)
+    }
+
+
+
+     
+      
+ }
+
