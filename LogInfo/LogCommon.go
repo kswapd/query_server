@@ -144,3 +144,21 @@ type SCustomLogger struct {
 		} `json:"log_info"`
 	} `json:"data"`
 }
+
+
+
+type SFileLogger struct {
+  File_name                 string           `json:"file_name"`
+  Log_start_time string          `json:"log_start_time"`
+  Log_end_time     string          `json:"log_end_time"`
+}
+
+
+type SQueryCustomFileResult struct {
+  Return_code                 int64           `json:"return_code"`
+  Type                        string          `json:"type"`
+  Query_result                []SFileLogger `json:"query_result"`
+}
+
+
+
