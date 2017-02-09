@@ -36,6 +36,7 @@ type SQueryContainerLogResult struct {
 	Return_code                 int64              `json:"return_code"`
 	Current_query_result_length int64              `json:"current_query_result_length"`
 	All_query_result_length     int64              `json:"all_query_result_length"`
+	Type                        string             `json:"type"`
 	Query_result                []SContainerLogger `json:"query_result"`
 }
 
@@ -43,6 +44,7 @@ type SQueryNginxLogResult struct {
 	Return_code                 int64          `json:"return_code"`
 	Current_query_result_length int64          `json:"current_query_result_length"`
 	All_query_result_length     int64          `json:"all_query_result_length"`
+	Type                        string         `json:"type"`
 	Query_result                []SNginxLogger `json:"query_result"`
 }
 
@@ -50,6 +52,7 @@ type SQueryMysqlLogResult struct {
 	Return_code                 int64          `json:"return_code"`
 	Current_query_result_length int64          `json:"current_query_result_length"`
 	All_query_result_length     int64          `json:"all_query_result_length"`
+	Type                        string         `json:"type"`
 	Query_result                []SMysqlLogger `json:"query_result"`
 }
 
@@ -57,6 +60,7 @@ type SQueryRedisLogResult struct {
 	Return_code                 int64          `json:"return_code"`
 	Current_query_result_length int64          `json:"current_query_result_length"`
 	All_query_result_length     int64          `json:"all_query_result_length"`
+	Type                        string         `json:"type"`
 	Query_result                []SRedisLogger `json:"query_result"`
 }
 
