@@ -126,6 +126,7 @@ type SQueryCustomLogResult struct {
 	Return_code                 int64           `json:"return_code"`
 	Current_query_result_length int64           `json:"current_query_result_length"`
 	All_query_result_length     int64           `json:"all_query_result_length"`
+	Type                        string          `json:"type"`
 	Query_result                []SCustomLogger `json:"query_result"`
 }
 

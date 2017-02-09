@@ -350,31 +350,43 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	}
 
 	q := elastic.NewBoolQuery()
+	q = q.Must(elastic.NewMatchQuery("type", "custom_log"))
+	//	q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
+	//	q = q.Should(elastic.NewTermQuery("type", "log_container"))
+	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
+	q = q.Must(elastic.NewMatchQuery("data.app_file", queryInfo.File_name))
 
 	if queryInfo.Query_content != "" {
 		qSub := elastic.NewBoolQuery()
 		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.warn_type", queryInfo.Query_content))
 		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.message", queryInfo.Query_content))
-
-		//	q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
-		q = q.Must(elastic.NewMatchQuery("type", "custom_log"))
-		//	q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
-		//	q = q.Should(elastic.NewTermQuery("type", "log_container"))
-		q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
-		q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
-
-		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.remote", queryInfo.Query_content))
-		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.host", queryInfo.Query_content))
-		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.user", queryInfo.Query_content))
-		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.method", queryInfo.Query_content))
-		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.path", queryInfo.Query_content))
-		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.code", queryInfo.Query_content))
-		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.size", queryInfo.Query_content))
-		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.referer", queryInfo.Query_content))
-		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.agent", queryInfo.Query_content))
-
 		q = q.Must(qSub)
 	}
+	//	if queryInfo.Query_content != "" {
+	//		qSub := elastic.NewBoolQuery()
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.warn_type", queryInfo.Query_content))
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.message", queryInfo.Query_content))
+
+	//		//	q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
+	//		q = q.Must(elastic.NewMatchQuery("type", "custom_log"))
+	//		//	q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
+	//		//	q = q.Should(elastic.NewTermQuery("type", "log_container"))
+	//		q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+	//		q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
+
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.remote", queryInfo.Query_content))
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.host", queryInfo.Query_content))
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.user", queryInfo.Query_content))
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.method", queryInfo.Query_content))
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.path", queryInfo.Query_content))
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.code", queryInfo.Query_content))
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.size", queryInfo.Query_content))
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.referer", queryInfo.Query_content))
+	//		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.agent", queryInfo.Query_content))
+
+	//		q = q.Must(qSub)
+	//	}
 
 	// q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
 
@@ -395,8 +407,8 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	ss := string(data)
 	fmt.Println(ss)
 
-	search := client.Search().Index("app_*_to_es.log-*") //.Type("film")
-	search = search.Query(q)                             //.Filter(andFilter)
+	search := client.Search().Index("custom_log_to_es.log-*") //.Type("film")
+	search = search.Query(q)                                  //.Filter(andFilter)
 
 	search = search.Sort("data.log_info.log_time", false)
 	search = search.From((pageIndex - 1) * lengthPerPage).Size(lengthPerPage)
@@ -412,6 +424,9 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	var customLogger SCustomLogger
 	var customResult SQueryCustomLogResult
 	customResult.Return_code = 200
+	customResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
+	customResult.All_query_result_length = searchResult.Hits.TotalHits
+	customResult.Type = "custom_log"
 
 	if len(searchResult.Hits.Hits) > 0 {
 
