@@ -180,26 +180,6 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 		return
 	}
 
-	if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
-
-	if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
-		c.JSON(200, InvalidQuery)
-		return
-	}
-
-	/* count, err := client.Count("fluentd_from_container_to_es.log-2016.12.01").Do(context.TODO())
-	   if err != nil {
-	     fmt.Printf("error:%#v.\n",err)
-	   }
-
-	   fmt.Printf("No condition got %d.\n",  count)
-
-
-	   fmt.Println(queryInfo.Container_uuid)*/
-
 	q := elastic.NewBoolQuery()
 
 	//      q = q.Must(elastic.NewTermQuery("data.container_uuid", queryInfo.Container_uuid))
@@ -209,6 +189,24 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	//q = q.Should(elastic.NewTermQuery("type", "log_container"))
 	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
 	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
+
+	if queryInfo.Query_content != "" {
+		qSub := elastic.NewBoolQuery()
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.warn_type", queryInfo.Query_content))
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.message", queryInfo.Query_content))
+
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.remote", queryInfo.Query_content))
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.host", queryInfo.Query_content))
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.user", queryInfo.Query_content))
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.method", queryInfo.Query_content))
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.path", queryInfo.Query_content))
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.code", queryInfo.Query_content))
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.size", queryInfo.Query_content))
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.referer", queryInfo.Query_content))
+		qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.agent", queryInfo.Query_content))
+
+		q = q.Must(qSub)
+	}
 
 	// q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
 
@@ -273,7 +271,7 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 		if strings.Contains(appType, "nginx") {
 			t := tNginx
 			logResult := logNginxResult
-
+			logResult.Type = "nginx"
 			logResult.Return_code = 200
 			logResult.All_query_result_length = searchResult.Hits.TotalHits
 			logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
@@ -288,6 +286,7 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 			t := tMysql
 			logResult := logMysqlResult
 			logResult.Return_code = 200
+			logResult.Type = "mysql"
 			logResult.All_query_result_length = searchResult.Hits.TotalHits
 			logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
 			for _, hit := range searchResult.Hits.Hits {
@@ -302,6 +301,7 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 			t := tRedis
 			logResult := logRedisResult
 			logResult.Return_code = 200
+			logResult.Type = "redis"
 			logResult.All_query_result_length = searchResult.Hits.TotalHits
 			logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
 			for _, hit := range searchResult.Hits.Hits {
