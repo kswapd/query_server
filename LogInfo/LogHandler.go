@@ -3,7 +3,7 @@ import (
     "fmt"
     "github.com/gin-gonic/gin"
     "query_server/Common"
-   // "log"
+    "log"
     "strconv"
     "strings"
     "encoding/json"
@@ -139,7 +139,7 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
       logResult.Return_code = 200
       logResult.Current_query_result_length = 10
       logResult.All_query_result_length = 100
-
+      logResult.Type = "container"
       if len(searchResult.Hits.Hits) > 0 {
         logResult.All_query_result_length = searchResult.Hits.TotalHits
         //fmt.Printf("Found a total of %d tweets\n", searchResult.Hits.TotalHits)
@@ -311,7 +311,7 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
           if strings.Contains(appType, "nginx"){
               t := tNginx
               logResult := logNginxResult
-
+              logResult.Type = "nginx"
               logResult.Return_code = 200
               logResult.All_query_result_length = searchResult.Hits.TotalHits
               logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
@@ -326,6 +326,7 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
               t := tMysql
               logResult := logMysqlResult
               logResult.Return_code = 200
+              logResult.Type = "mysql"
               logResult.All_query_result_length = searchResult.Hits.TotalHits
               logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
               for _, hit := range searchResult.Hits.Hits {            
@@ -340,6 +341,7 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
               t := tRedis
               logResult := logRedisResult
               logResult.Return_code = 200
+              logResult.Type = "redis"
               logResult.All_query_result_length = searchResult.Hits.TotalHits
               logResult.Current_query_result_length = int64(len(searchResult.Hits.Hits))
               for _, hit := range searchResult.Hits.Hits {            
@@ -483,6 +485,7 @@ func QueryLogInfo(c *gin.Context) {
       searchResult, err := search.Do(context.TODO())
 
       if err != nil {
+          log.Fatal(err)
           c.JSON(200, ErrElasticsearch)
           return
       }
