@@ -222,7 +222,25 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
       q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
       q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
+      if queryInfo.Query_content != "" {
+        qSub := elastic.NewBoolQuery()
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.warn_type", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.message", queryInfo.Query_content))
 
+
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.remote", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.host", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.user", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.method", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.path", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.code", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.size", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.referer", queryInfo.Query_content))
+        qSub = qSub.Should(elastic.NewMatchQuery("data.log_info.agent", queryInfo.Query_content))
+    
+
+        q = q.Must(qSub)
+      }
 
 
      // q = q.Must(elastic.NewMatchQuery("data.environment_id", "Network Agent"))
@@ -456,9 +474,9 @@ func QueryLogInfo(c *gin.Context) {
       s := string(data)
       fmt.Println(s)*/
       //all := NewMatchAllQuery()
-      search := client.Search().Index("fluentd_from_container_to_es.log-*").Query(q)//.Pretty(true)
+      search := client.Search().Index("app_nginx_to_es.log-2017.02.09").Query(q)//.Pretty(true)
      // search = search.Query(q)//.Filter(andFilter)
-      agg := elastic.NewTermsAggregation().Field("container_uuid").Size(10).OrderByCountDesc()
+      agg := elastic.NewTermsAggregation().Field("data.container_uuid").Size(10).OrderByCountDesc()
       search = search.Aggregation("genres", agg)
       //search = search.From(pageIndex-1).Size(lengthPerPage)
      // search = search.Sort("data.log_info.log_time", false)
