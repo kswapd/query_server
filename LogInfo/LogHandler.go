@@ -14,6 +14,7 @@ import (
 
 const (
 	ESUrl string = "http://192.168.100.224:8056"
+  //ESUrlList = []string{"str1", "str2", "str3", "str4"}
 )
 
 var (
@@ -43,7 +44,7 @@ var (
 
 func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
-	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
+	client, err := elastic.NewClient(elastic.SetURL("http://192.168.100.224:8056", "http://192.168.100.225:8056", "http://192.168.100.226:8056"))
 	pageIndex := 0
 	lengthPerPage := 50
 	if err != nil {
@@ -179,6 +180,18 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 		c.JSON(200, InvalidQuery)
 		return
 	}
+
+
+
+  if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
+    c.JSON(200, InvalidQuery)
+    return
+  }
+
+  if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
+    c.JSON(200, InvalidQuery)
+    return
+  }
 
 	q := elastic.NewBoolQuery()
 
