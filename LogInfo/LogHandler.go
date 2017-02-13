@@ -85,7 +85,22 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	// q = q.Must(elastic.NewMatchQuery("type", "log_file_container"))
 	//q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
 	//q = q.Should(elastic.NewTermQuery("type", "log_container"))
-	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+
+ if queryInfo.Container_eid != ""{
+    qSubc := elastic.NewBoolQuery()
+   //q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
+   // q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
+    q = q.Must(qSubc)
+ }else{
+    q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+ }
+
+
+
+	
 	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
 	if queryInfo.Query_content != "" {
@@ -200,7 +215,22 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	//q = q.Must(elastic.NewMatchQuery("type", "log_file_container"))
 	//q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
 	//q = q.Should(elastic.NewTermQuery("type", "log_container"))
-	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+	//q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+
+
+if queryInfo.Container_eid != ""{
+    qSubc := elastic.NewBoolQuery()
+   //q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
+   // q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
+    q = q.Must(qSubc)
+ }else{
+    q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+ }
+
+
 	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
 	if queryInfo.Query_content != "" {
@@ -366,7 +396,22 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	//q = q.Must(elastic.NewMatchQuery("type", "custom_log"))
 	//	q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
 	//	q = q.Should(elastic.NewTermQuery("type", "log_container"))
-	q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+	//q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+
+  if queryInfo.Container_eid != ""{
+    qSubc := elastic.NewBoolQuery()
+   //q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
+   // q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
+    q = q.Must(qSubc)
+ }else{
+    q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+ }
+
+
+
   q = q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
 	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 	
@@ -499,6 +544,7 @@ func QueryCustomInfo(c *gin.Context) {
 
 
 	queryInfo.Container_uuid = c.Query("container_uuid")
+  queryInfo.Container_eid = c.Query("container_eid")
 	queryInfo.Environment_id = c.Query("environment_id")
 	queryInfo.Start_time = c.Query("start_time")
 	queryInfo.End_time = c.Query("end_time")
@@ -520,7 +566,19 @@ func QueryCustomInfo(c *gin.Context) {
 	}
 	 q := elastic.NewBoolQuery()
 	//q := elastic.NewMatchAllQuery()
-	  q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+
+   if queryInfo.Container_eid != ""{
+    qSubc := elastic.NewBoolQuery()
+   //q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
+   // q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
+    q = q.Must(qSubc)
+ }else{
+    q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+    //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+ }
+	  //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
 	  //q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))*/
 
 	//agg := elastic.NewTermsAggregation().Field("data.app_file")
