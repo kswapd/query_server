@@ -467,6 +467,7 @@ func QueryLogInfo(c *gin.Context) {
 
 	queryInfo.Query_type = c.Query("query_type")
 	queryInfo.Container_uuid = c.Query("container_uuid")
+  queryInfo.Container_eid = c.Query("container_eid")
 	queryInfo.Environment_id = c.Query("environment_id")
 	queryInfo.Start_time = c.Query("start_time")
 	queryInfo.End_time = c.Query("end_time")

@@ -4,6 +4,7 @@ type QueryLogJson struct {
 	Query_type      string `json:"query_type"`
 	File_name      string `json:"file_name"`
 	Container_uuid  string `json:"container_uuid"`
+	Container_eid  string `json:"container_eid"`
 	Environment_id  string `json:"environment_id"`
 	Start_time      string `json:"start_time"`
 	End_time        string `json:"end_time"`
