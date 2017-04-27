@@ -7,6 +7,7 @@ services:
       - "8100:8100"
     environment:
       - INFLUXDB_HOST=internal-hna-caas-product-bd-influxdb-lb-1872922884.cn-north-1.elb.amazonaws.com.cn:8086
+      - ES_HOST=http://172.16.10.169:9200
     network_mode: "host"
     labels:
       caas.hna.monitor.queryserver: 'true'
