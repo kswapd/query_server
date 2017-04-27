@@ -6,7 +6,7 @@ import (
 	"query_server/Common"
 	"strconv"
 	"strings"
-
+	"flag"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	elastic "gopkg.in/olivere/elastic.v5"
@@ -39,12 +39,23 @@ var (
 	   "a": "aa",
 	   "b": "bb",
 	 }*/
+	ArgEsHost = flag.String("elasticsearch_cluster_host", "http://172.16.10.169:9200", "host1:port1, host2:port2")
+			
+	EsHostArr = strings.Split(*ArgEsHost,",");
 
 )
 
-func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
-	client, err := elastic.NewClient(elastic.SetURL("http://192.168.100.224:8056", "http://192.168.100.225:8056", "http://192.168.100.226:8056"))
+func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
+	
+
+        
+
+	//client, err := elastic.NewClient(elastic.SetURL("http://192.168.100.224:8056", "http://192.168.100.225:8056", "http://192.168.100.226:8056"))
+	EsHostArr = strings.Split(*ArgEsHost,",");
+	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+
 	pageIndex := 0
 	lengthPerPage := 50
 	if err != nil {
@@ -181,8 +192,8 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 }
 
 func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
-
-	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
+	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 	pageIndex := 0
 	lengthPerPage := 50
 	if err != nil {
@@ -367,8 +378,8 @@ if queryInfo.Container_eid != ""{
 }
 
 func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
-
-	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
+	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 	pageIndex := 0
 	lengthPerPage := 50
 
@@ -524,7 +535,8 @@ func QueryLogInfo(c *gin.Context) {
 	//c.JSON(200, gin.H{"type": queryInfo.Query_type})
 
 	fmt.Printf("%#v.\n", queryInfo)
-
+	EsHostArr = strings.Split(*ArgEsHost,",");
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
 	switch queryInfo.Query_type {
 	case "container":
 		QueryContainerLog(c, queryInfo)
@@ -552,8 +564,8 @@ func QueryCustomInfo(c *gin.Context) {
 	//c.JSON(200, gin.H{"type": queryInfo.Query_type})
 
 	fmt.Printf("%#v.\n", queryInfo)
-
-	client, err := elastic.NewClient(elastic.SetURL(ESUrl))
+	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
 		return
