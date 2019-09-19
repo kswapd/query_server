@@ -52,21 +52,51 @@ type SContainerLogger struct {
 	} `json:"data"`
 }
 
-/* {
-   "data": {
-     "environment_id": "29619",
-     "container_name": "testlog-mynginx07-1",
-     "container_uuid": "be4b5b3f-01b1-4962-89fa-bd1548996def",
-     "namespace": "testlog",
-     "log_info": {
-       "source": "stdout",
-       "message": "2017/01/13 12:55:53 ~~~ End of Kafka Send.\r",
-       "log_time": "2017-01-13T12:55:53.000+00:00"
-     },
-     "timestamp": "2017-01-13T12:55:53.352+00:00"
-   },
-   "type": "container"
- },*/
+
+
+type SZipkinSpan struct {
+
+		TraceId string `json:"traceId"`
+		Duration int64 `json:"duration"`
+		Name      string `json:"name"`
+		Id string `json:"id"`
+		Timestamp_millis      int64 `json:"timestamp_millis"`
+		Log_info       struct {
+			Log_time string `json:"log_time"`
+			Source   string `json:"source"`
+			Message  string `json:"message"`
+		} `json:"log_info"`
+		Tags   map[string]interface{}  `json:"tags"`
+}
+
+ type SQueryZipkinResult struct {
+	Return_code                 int64              `json:"return_code"`
+	Current_query_result_length int64              `json:"current_query_result_length"`
+	All_query_result_length     int64              `json:"all_query_result_length"`
+	Type                        string             `json:"type"`
+	Query_result                []SZipkinSpan `json:"query_result"`
+}
+
+
+type SZipkinStats struct {
+
+
+		Type string `json:"type"`
+		Annation string `json:"annation"`
+		Counts      int64 `json:"counts"`
+		Max 		int64 `json:"max"`
+		Min 		int64 `json:"min"`
+		Avg 		int64 `json:"avg"`
+		Sum      int64 `json:"sum"`
+}
+
+ type SQueryZipkinStatsResult struct {
+	Return_code                 int64              `json:"return_code"`
+	Current_query_result_length int64              `json:"current_query_result_length"`
+	All_query_result_length     int64              `json:"all_query_result_length"`
+	Type                        string             `json:"type"`
+	Query_result                []SZipkinStats `json:"query_result"`
+}
 
 type SQueryContainerLogResult struct {
 	Return_code                 int64              `json:"return_code"`

@@ -527,7 +527,8 @@ func QueryZipkinInfo(c *gin.Context) {
 	queryInfo.Start_time = c.Query("start_time")
 	queryInfo.End_time = c.Query("end_time")
 	fmt.Printf("%#v.\n", queryInfo)
-	DoQueryZipkinInfo(c, queryInfo)
+	//DoQueryZipkinInfo(c, queryInfo)
+	DoZipkinStats(c, queryInfo)
 
 }
 
