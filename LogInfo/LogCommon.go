@@ -1,4 +1,40 @@
 package LogInfo
+import (
+	"strings"
+	"flag"
+	"github.com/gin-gonic/gin"
+
+)
+
+
+const (
+	ESUrl string = "http://192.168.100.224:8056"
+  //ESUrlList = []string{"str1", "str2", "str3", "str4"}
+)
+
+var (
+	QueryNoResult = gin.H{
+		"return_code": 400,
+		"err_info":    "query not found",
+	}
+	ConnElasticsearchErr = gin.H{
+		"return_code": 401,
+		"err_info":    "elastic search connection error",
+	}
+	ErrElasticsearch = gin.H{
+		"return_code": 402,
+		"err_info":    "elastic search error",
+	}
+	InvalidQuery = gin.H{
+		"return_code": 403,
+		"err_info":    "invalid query",
+	}
+	ArgEsHost = flag.String("elasticsearch_cluster_host", "http://10.7.19.208:9200", "host1:port1, host2:port2")
+			
+	EsHostArr = strings.Split(*ArgEsHost,",");
+
+)
+
 
 type SContainerLogger struct {
 	Type string `json:"type"`

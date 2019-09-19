@@ -38,3 +38,10 @@ type QueryContainerStatus struct {
 	Start_time     string `json:"start_time"`
 	End_time       string `json:"end_time"`
 }
+
+
+type QueryZipkinSpan struct {
+	Start_time      string `json:"start_time"`
+	End_time        string `json:"end_time"`
+	Query_type     string `json:"query_type"`
+}

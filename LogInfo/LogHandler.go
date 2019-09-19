@@ -6,44 +6,11 @@ import (
 	"query_server/Common"
 	"strconv"
 	"strings"
-	"flag"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	elastic "gopkg.in/olivere/elastic.v5"
 )
 
-const (
-	ESUrl string = "http://192.168.100.224:8056"
-  //ESUrlList = []string{"str1", "str2", "str3", "str4"}
-)
-
-var (
-	QueryNoResult = gin.H{
-		"return_code": 400,
-		"err_info":    "query not found",
-	}
-	ConnElasticsearchErr = gin.H{
-		"return_code": 401,
-		"err_info":    "elastic search connection error",
-	}
-	ErrElasticsearch = gin.H{
-		"return_code": 402,
-		"err_info":    "elastic search error",
-	}
-	InvalidQuery = gin.H{
-		"return_code": 403,
-		"err_info":    "invalid query",
-	}
-
-	/* m3 := map[string]string{
-	   "a": "aa",
-	   "b": "bb",
-	 }*/
-	ArgEsHost = flag.String("elasticsearch_cluster_host", "http://172.16.10.169:9200", "host1:port1, host2:port2")
-			
-	EsHostArr = strings.Split(*ArgEsHost,",");
-
-)
 
 
 func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
@@ -548,6 +515,19 @@ func QueryLogInfo(c *gin.Context) {
 		c.JSON(200, InvalidQuery)
 		return
 	}
+
+}
+
+func QueryZipkinInfo(c *gin.Context) {
+	var queryInfo Common.QueryZipkinSpan
+
+	//  c.BindJSON(&queryInfo)
+
+	queryInfo.Query_type = c.Query("query_type")
+	queryInfo.Start_time = c.Query("start_time")
+	queryInfo.End_time = c.Query("end_time")
+	fmt.Printf("%#v.\n", queryInfo)
+	DoQueryZipkinInfo(c, queryInfo)
 
 }
 
