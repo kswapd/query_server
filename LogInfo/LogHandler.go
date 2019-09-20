@@ -532,15 +532,18 @@ func QueryZipkinInfo(c *gin.Context) {
 
 
 	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	IsAll = false
 	switch queryInfo.Query_type {
+
 	case "all":
-		DoZipkinStats(c, queryInfo)
+		IsAll = true
+		ZipkinStatsAll(c, queryInfo)
 	case "hystrix":
-		DoZipkinStats(c, queryInfo)
+		ZipkinStatsHystrix(c, queryInfo)
 	case "lb":
 		ZipkinStatsLoadBalanced(c, queryInfo)
 	case "gateway":
-		DoZipkinStats(c, queryInfo)
+		ZipkinStatsJupiter(c, queryInfo)
 	case "druid":
 		ZipkinStatsDruid(c, queryInfo)
 	case "feign":
@@ -548,11 +551,13 @@ func QueryZipkinInfo(c *gin.Context) {
 	case "cache":
 		ZipkinStatsCache(c, queryInfo)
 	case "mysql":
-		ZipkinStatsDruid(c, queryInfo)
+		ZipkinStatsMysql(c, queryInfo)
+	case "gravity":
+		ZipkinStatsGravity(c, queryInfo)
 	case "http":
-		DoZipkinStats(c, queryInfo)
+		ZipkinStatsHttp(c, queryInfo)
 	default:
-		DoZipkinStats(c, queryInfo)
+		ZipkinStatsAll(c, queryInfo)
 		return
 	}
 

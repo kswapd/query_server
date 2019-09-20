@@ -80,6 +80,7 @@ type SZipkinStats struct {
 		Type string `json:"type"`
 		Annotation string `json:"annotation"`
 		Counts      int64 `json:"counts"`
+		All_Hits      int64 `json:"all_hits"`
 		Max 		int64 `json:"max"`
 		Min 		int64 `json:"min"`
 		Avg 		int64 `json:"avg"`
