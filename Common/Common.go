@@ -44,4 +44,6 @@ type QueryZipkinSpan struct {
 	Start_time      string `json:"start_time"`
 	End_time        string `json:"end_time"`
 	Query_type     string `json:"query_type"`
+	Lookback		int64 `json:"lookback"`
+	Max_len 		int64 `json:"max_len"`
 }

@@ -526,9 +526,35 @@ func QueryZipkinInfo(c *gin.Context) {
 	queryInfo.Query_type = c.Query("query_type")
 	queryInfo.Start_time = c.Query("start_time")
 	queryInfo.End_time = c.Query("end_time")
+	queryInfo.Lookback,_ = strconv.ParseInt(c.Query("lookback"), 10, 64)
+	queryInfo.Max_len, _ = strconv.ParseInt(c.Query("max_len"), 10, 64)
 	fmt.Printf("%#v.\n", queryInfo)
-	//DoQueryZipkinInfo(c, queryInfo)
-	DoZipkinStats(c, queryInfo)
+
+
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	switch queryInfo.Query_type {
+	case "all":
+		DoZipkinStats(c, queryInfo)
+	case "hystrix":
+		DoZipkinStats(c, queryInfo)
+	case "lb":
+		ZipkinStatsLoadBalanced(c, queryInfo)
+	case "gateway":
+		DoZipkinStats(c, queryInfo)
+	case "druid":
+		ZipkinStatsDruid(c, queryInfo)
+	case "feign":
+		ZipkinStatsFeign(c, queryInfo)
+	case "cache":
+		ZipkinStatsCache(c, queryInfo)
+	case "mysql":
+		ZipkinStatsDruid(c, queryInfo)
+	case "http":
+		DoZipkinStats(c, queryInfo)
+	default:
+		DoZipkinStats(c, queryInfo)
+		return
+	}
 
 }
 

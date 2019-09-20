@@ -61,11 +61,7 @@ type SZipkinSpan struct {
 		Name      string `json:"name"`
 		Id string `json:"id"`
 		Timestamp_millis      int64 `json:"timestamp_millis"`
-		Log_info       struct {
-			Log_time string `json:"log_time"`
-			Source   string `json:"source"`
-			Message  string `json:"message"`
-		} `json:"log_info"`
+
 		Tags   map[string]interface{}  `json:"tags"`
 }
 
@@ -82,7 +78,7 @@ type SZipkinStats struct {
 
 
 		Type string `json:"type"`
-		Annation string `json:"annation"`
+		Annotation string `json:"annotation"`
 		Counts      int64 `json:"counts"`
 		Max 		int64 `json:"max"`
 		Min 		int64 `json:"min"`
@@ -91,11 +87,11 @@ type SZipkinStats struct {
 }
 
  type SQueryZipkinStatsResult struct {
-	Return_code                 int64              `json:"return_code"`
-	Current_query_result_length int64              `json:"current_query_result_length"`
-	All_query_result_length     int64              `json:"all_query_result_length"`
+	Ret_code                 int64              `json:"ret_code"`
+	Ret_length int64              `json:"ret_length"`
+	All_length int64              `json:"all_length"`
 	Type                        string             `json:"type"`
-	Query_result                []SZipkinStats `json:"query_result"`
+	Ret                []SZipkinStats `json:"ret"`
 }
 
 type SQueryContainerLogResult struct {
