@@ -239,7 +239,7 @@ func ZipkinStatsLoadBalanced(c *gin.Context, queryInfo Common.QueryZipkinSpan)  
 
 
 
-	fmt.Println("----------------当前时间/时间戳/字符串----------------")
+
     ti := time.Now()
     timestamp := ti.Unix()
     fmt.Println("当前本时区时间：", ti)
@@ -330,6 +330,7 @@ func ZipkinStatsLoadBalanced(c *gin.Context, queryInfo Common.QueryZipkinSpan)  
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = "LoadBalanced"
 		spanStat.Type = "lb"
+		spanStat.Name = "负载均衡组件"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
@@ -397,8 +398,6 @@ func ZipkinStatsGravity(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipk
 	}
 
 
-
-	fmt.Println("----------------当前时间/时间戳/字符串----------------")
     ti := time.Now()
     timestamp := ti.Unix()
     fmt.Println("当前本时区时间：", ti)
@@ -489,6 +488,7 @@ func ZipkinStatsGravity(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipk
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = anno
 		spanStat.Type = "gravity"
+		spanStat.Name = "工作流引擎"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
@@ -565,8 +565,6 @@ func ZipkinStatsFeign(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 	}
 
 
-
-	fmt.Println("----------------当前时间/时间戳/字符串----------------")
     ti := time.Now()
     timestamp := ti.Unix()
     fmt.Println("当前本时区时间：", ti)
@@ -658,6 +656,7 @@ func ZipkinStatsFeign(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = anno
 		spanStat.Type = "feign"
+		spanStat.Name = "Feign组件"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
@@ -834,6 +833,7 @@ func ZipkinStatsCache(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = anno
 		spanStat.Type = "cache"
+		spanStat.Name = "分布式缓存"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
@@ -1005,6 +1005,7 @@ func ZipkinStatsDruid(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = anno
 		spanStat.Type = "druid"
+		spanStat.Name = "数据库连接池"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
@@ -1176,6 +1177,7 @@ func ZipkinStatsMysql(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = anno
 		spanStat.Type = "mysql"
+		spanStat.Name = "Mysql数据库"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
@@ -1342,6 +1344,7 @@ func ZipkinStatsHystrix(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipk
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = anno
 		spanStat.Type = "hystrix"
+		spanStat.Name = "熔断降级组件"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
@@ -1511,6 +1514,7 @@ func ZipkinStatsJupiter(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipki
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = anno
 		spanStat.Type = "gateway"
+		spanStat.Name = "网关组件"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
@@ -1678,6 +1682,7 @@ func ZipkinStatsHttp(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipkinSt
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = anno
 		spanStat.Type = "http"
+		spanStat.Name = "Http"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
@@ -1847,6 +1852,7 @@ func ZipkinStatsMQ(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipkinStat
 		spanStat.All_Hits = searchResult.Hits.TotalHits
 		spanStat.Annotation = anno
 		spanStat.Type = "mq"
+		spanStat.Name = "消息中间件"
 		// Iterate through results
 		for _, hit := range searchResult.Hits.Hits {
 			// hit.Index contains the name of the index
