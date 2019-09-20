@@ -557,6 +557,7 @@ func QueryZipkinInfo(c *gin.Context) {
 	case "http":
 		ZipkinStatsHttp(c, queryInfo)
 	default:
+		IsAll = true
 		ZipkinStatsAll(c, queryInfo)
 		return
 	}
