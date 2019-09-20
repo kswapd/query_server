@@ -556,6 +556,8 @@ func QueryZipkinInfo(c *gin.Context) {
 		ZipkinStatsGravity(c, queryInfo)
 	case "http":
 		ZipkinStatsHttp(c, queryInfo)
+	case "mq":
+		ZipkinStatsMQ(c, queryInfo)
 	default:
 		IsAll = true
 		ZipkinStatsAll(c, queryInfo)
