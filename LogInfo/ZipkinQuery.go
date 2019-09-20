@@ -206,7 +206,7 @@ func DoZipkinStats(c *gin.Context, queryInfo Common.QueryZipkinSpan) {
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		
 	}
 
 }
@@ -366,7 +366,9 @@ func ZipkinStatsLoadBalanced(c *gin.Context, queryInfo Common.QueryZipkinSpan)  
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
@@ -524,7 +526,9 @@ func ZipkinStatsGravity(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipk
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
@@ -692,7 +696,9 @@ func ZipkinStatsFeign(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
@@ -869,7 +875,9 @@ func ZipkinStatsCache(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
@@ -1041,7 +1049,9 @@ func ZipkinStatsDruid(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
@@ -1213,7 +1223,9 @@ func ZipkinStatsMysql(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
@@ -1380,7 +1392,9 @@ func ZipkinStatsHystrix(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipk
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
@@ -1550,7 +1564,9 @@ func ZipkinStatsJupiter(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipki
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
@@ -1718,7 +1734,9 @@ func ZipkinStatsHttp(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipkinSt
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
@@ -1888,7 +1906,9 @@ func ZipkinStatsMQ(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipkinStat
 
 	} else {
 		// No hits
-		c.JSON(200, QueryNoResult)
+		if !IsAll {
+			c.JSON(200, QueryNoResult)
+		}
 		return spanStat
 	}
 
