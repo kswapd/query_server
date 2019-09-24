@@ -517,7 +517,57 @@ func QueryLogInfo(c *gin.Context) {
 	}
 
 }
+func QueryTracingModules(c *gin.Context){
 
+	tracingModules:= []TracingModules {
+		TracingModules{
+			"负载均衡组件",
+			"lb",
+		},
+		TracingModules{
+			"熔断降级组件",
+			"hystrix",
+		},
+		TracingModules{
+			"网关组件",
+			"gateway",
+		},
+		TracingModules{
+			"数据库连接池",
+			"druid",
+		},
+		TracingModules{
+			"Feign组件",
+			"feign",
+		},
+		TracingModules{
+			"分布式缓存",
+			"cache",
+		},
+		TracingModules{
+			"Mysql数据库",
+			"mysql",
+		},
+		TracingModules{
+			"工作流引擎",
+			"gravity",
+		},
+		TracingModules{
+			"Http组件",
+			"http",
+		},
+		TracingModules{
+			"消息中间件",
+			"mq",
+		},
+	}
+	/*var interfaceSlice []interface{} = make([]interface{}, len(tracingModules))
+	for i, tag := range tracingModules {
+		interfaceSlice[i] = tag
+	}*/
+
+	c.JSON(200, tracingModules) 
+}
 func QueryZipkinInfo(c *gin.Context) {
 	var queryInfo Common.QueryZipkinSpan
 

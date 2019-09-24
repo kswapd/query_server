@@ -53,6 +53,10 @@ type SContainerLogger struct {
 }
 
 
+type TracingModules struct {
+    Name          string `json:"name"`
+    Type   		string `json:"type"`
+}
 
 type SZipkinSpan struct {
 

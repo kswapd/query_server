@@ -13,5 +13,7 @@ func Start() {
 	
 	r.POST("/tracing-stats", OnQueryZipkinInfo)
 	r.GET("/tracing-stats", OnQueryZipkinInfo)
+	r.POST("/tracing-modules", OnQueryTracingModules)
+	r.GET("/tracing-modules", OnQueryTracingModules)
 	r.Run(":8100")
 }

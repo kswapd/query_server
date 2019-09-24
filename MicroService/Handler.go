@@ -15,6 +15,10 @@ func OnQueryLogInfo(c *gin.Context){
   LogInfo.QueryLogInfo(c)
 }
 
+func OnQueryTracingModules(c *gin.Context){
+  LogInfo.QueryTracingModules(c)
+}
+
 func OnQueryZipkinInfo(c *gin.Context){
   LogInfo.QueryZipkinInfo(c)
   
