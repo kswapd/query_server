@@ -29,7 +29,7 @@ var (
 		"return_code": 403,
 		"err_info":    "invalid query",
 	}
-	ArgEsHost = flag.String("elasticsearch_cluster_host", "http://10.7.19.208:9200", "host1:port1, host2:port2")
+	ArgEsHost = flag.String("elasticsearch_cluster_host", "http://192.168.1.238:9200", "host1:port1, host2:port2")
 			
 	EsHostArr = strings.Split(*ArgEsHost,",");
 

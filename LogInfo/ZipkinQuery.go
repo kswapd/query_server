@@ -17,14 +17,16 @@ import (
 var IsAll = false
 func DoQueryZipkinInfo(c *gin.Context, queryInfo Common.QueryZipkinSpan) {
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
 		return
 
 	}
+	
 
 	q := elastic.NewBoolQuery()
     q = q.Must(elastic.NewTermQuery("_q", "LoadBalanced"))
@@ -109,8 +111,9 @@ func DoQueryZipkinInfo(c *gin.Context, queryInfo Common.QueryZipkinSpan) {
 
 func DoZipkinStats(c *gin.Context, queryInfo Common.QueryZipkinSpan) {
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -222,8 +225,9 @@ func ZipkinStatsLoadBalanced(c *gin.Context, queryInfo Common.QueryZipkinSpan)  
 	spanStat.Type  = queryInfo.Query_type
 
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -384,8 +388,9 @@ func ZipkinStatsGravity(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipk
 	var anno = "Gravity"
 	spanStat.Type  = queryInfo.Query_type
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -553,8 +558,9 @@ func ZipkinStatsFeign(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 	spanStat.Type  = queryInfo.Query_type
 	var anno = "FeignClient"
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -722,8 +728,9 @@ func ZipkinStatsCache(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 
 	
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -904,8 +911,9 @@ func ZipkinStatsDruid(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 	var maxLen int64
 	maxLen = 50
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -1078,10 +1086,12 @@ func ZipkinStatsMysql(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipkin
 	var maxLen int64
 	maxLen = 50
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
+		fmt.Printf("error0: %q.\n", err)
 		c.JSON(200, ConnElasticsearchErr)
 		return spanStat
 
@@ -1248,8 +1258,9 @@ func ZipkinStatsHystrix(c *gin.Context, queryInfo Common.QueryZipkinSpan)  SZipk
 	var maxLen int64
 	maxLen = 50
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -1419,8 +1430,9 @@ func ZipkinStatsJupiter(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipki
 	var maxLen int64
 	maxLen = 50
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -1439,7 +1451,7 @@ func ZipkinStatsJupiter(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipki
     fmt.Println("当前本时区时间：", ti)
     fmt.Println("当前本时区时间时间戳：", timestamp)
 
-    	matchDruidQuery := elastic.NewQueryStringQuery("dev-jupiter")
+    	matchDruidQuery := elastic.NewQueryStringQuery("jupiter-gateway")
     	matchDruidQuery.DefaultField("localEndpoint.serviceName")
 
 
@@ -1587,8 +1599,9 @@ func ZipkinStatsHttp(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipkinSt
 	var maxLen int64
 	maxLen = 50
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr)
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -1756,8 +1769,9 @@ func ZipkinStatsMQ(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipkinStat
 	var maxLen int64
 	maxLen = 50
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
-	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr)
+	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)

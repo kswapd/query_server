@@ -20,7 +20,7 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 
 	//client, err := elastic.NewClient(elastic.SetURL("http://192.168.100.224:8056", "http://192.168.100.225:8056", "http://192.168.100.226:8056"))
 	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
 	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 
 	pageIndex := 0
@@ -159,7 +159,7 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 }
 
 func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
 	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 	pageIndex := 0
 	lengthPerPage := 50
@@ -345,7 +345,7 @@ if queryInfo.Container_eid != ""{
 }
 
 func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
 	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 	pageIndex := 0
 	lengthPerPage := 50
@@ -579,7 +579,7 @@ func QueryCustomInfo(c *gin.Context) {
 	//c.JSON(200, gin.H{"type": queryInfo.Query_type})
 
 	fmt.Printf("%#v.\n", queryInfo)
-	fmt.Printf("ES host info %s,%q.\n",  ArgEsHost, EsHostArr);
+	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
 	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
