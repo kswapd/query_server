@@ -1451,12 +1451,15 @@ func ZipkinStatsJupiter(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipki
     fmt.Println("当前本时区时间：", ti)
     fmt.Println("当前本时区时间时间戳：", timestamp)
 
-    	matchDruidQuery := elastic.NewQueryStringQuery("jupiter-gateway")
-    	matchDruidQuery.DefaultField("localEndpoint.serviceName")
+    	matchJupiterQuery := elastic.NewQueryStringQuery("jupiter-gateway")
+    	matchJupiterQuery.DefaultField("localEndpoint.serviceName")
 
+		matchJupiterDevQuery := elastic.NewQueryStringQuery("dev-jupiter")
+    	matchJupiterDevQuery.DefaultField("localEndpoint.serviceName")	
 
 		qSub := elastic.NewBoolQuery()
-		qSub = qSub.Should(matchDruidQuery)
+		qSub = qSub.Should(matchJupiterQuery)
+		qSub = qSub.Should(matchJupiterDevQuery)
 		q = q.Must(qSub)
 
     if queryInfo.Lookback > 0{

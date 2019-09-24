@@ -3,3 +3,4 @@ query-server
 query_server
 .idea/
 .DS_Store
+.vscode/
