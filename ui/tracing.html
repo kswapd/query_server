@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- including ECharts file -->
+    <script type='text/javascript' src='./jquery-3.3.1.min.js'></script>
+    <script src="./echarts-en.min.js"></script>
+</head>
+<body>
+    <!-- prepare a DOM container with width and height -->
+    <div id="main" style="width: 1200px;height:400px;"></div>
+    <script>
+    var dataArr = [];
+    var allData = {"ret_code":200,"ret_length":10,"all_length":10,"type":"","ret":[{"type":"hystrix","annotation":"Hystrix","name":"熔断降级组件","counts":50,"all_hits":1685,"max":536097,"min":622,"avg":51128,"sum":2556424},{"type":"lb","annotation":"LoadBalanced","name":"负载均衡组件","counts":45,"all_hits":45,"max":585543,"min":4377,"avg":209947,"sum":9447651},{"type":"gateway","annotation":"Jupiter","name":"网关组件","counts":50,"all_hits":2965028,"max":0,"min":0,"avg":0,"sum":0},{"type":"druid","annotation":"AlibabaDruid","name":"数据库连接池","counts":50,"all_hits":42712,"max":1561,"min":425,"avg":688,"sum":34441},{"type":"feign","annotation":"FeignClient","name":"Feign组件","counts":50,"all_hits":150526,"max":445307,"min":835,"avg":11301,"sum":565067},{"type":"cache","annotation":"Cacheable|CachePut|CacheEvict","name":"分布式缓存","counts":50,"all_hits":3176,"max":24177,"min":597,"avg":2238,"sum":111914},{"type":"mysql","annotation":"Mysql","name":"Mysql数据库","counts":50,"all_hits":45669,"max":1511,"min":378,"avg":598,"sum":29912},{"type":"gravity","annotation":"Gravity","name":"工作流引擎","counts":50,"all_hits":4777,"max":477329,"min":980,"avg":20939,"sum":1046972},{"type":"http","annotation":"Http","name":"Http","counts":50,"all_hits":2932468,"max":4071,"min":901,"avg":1757,"sum":87879},{"type":"mq","annotation":"RabbitMQ","name":"消息中间件","counts":50,"all_hits":817,"max":14850,"min":1,"avg":1151,"sum":57559}]};
+            $.get('/tracing/tracing-stats',
+            function(response) {
+                console.log('hi');
+                console.log(response);
+
+                //allData = JSON.parse(response);
+		        allData = response;
+                dataArr = allData.ret;
+                initEchart();
+            });
+
+    var myChart = echarts.init(document.getElementById('main'));
+
+    function initEchart(){
+                // specify chart configuration item and data
+                var option = {
+                    title: {
+                        text: '技术组件耗时分析(us)'
+                    },
+                    tooltip: {},
+                    legend: {
+                        data:['Times']
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: [dataArr[0].name, dataArr[1].name, dataArr[2].name, dataArr[3].name, dataArr[4].name, dataArr[5].name, dataArr[6].name, dataArr[7].name, dataArr[8].name, dataArr[9].name]                        
+                    },
+                        yAxis: {},
+                        series: [{
+                            name: '平均值',
+                            type: 'bar',
+                            data: [dataArr[0].avg, dataArr[1].avg, dataArr[2].avg, dataArr[3].avg, dataArr[4].avg, dataArr[5].avg, dataArr[6].avg, dataArr[7].avg, dataArr[8].avg, dataArr[9].avg]                        
+                            },
+                            {
+                            name: '最大值',
+                            type: 'bar',
+                            data: [dataArr[0].max, dataArr[1].max, dataArr[2].max, dataArr[3].max, dataArr[4].max, dataArr[5].max, dataArr[6].max, dataArr[7].max, dataArr[8].max, dataArr[9].max]                        
+                            },
+                            {
+                            name: '最小值',
+                            type: 'bar',
+                            data: [dataArr[0].min, dataArr[1].min, dataArr[2].min, dataArr[3].min, dataArr[4].min, dataArr[5].min, dataArr[6].min, dataArr[7].min, dataArr[8].min, dataArr[9].min]                        
+                            },
+                            ]
+                    };
+    
+                    myChart.setOption(option);
+                }    
+        </script>
+    </body>
+    </html>
+
