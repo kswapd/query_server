@@ -13,7 +13,13 @@
     <script>
     var dataArr = [];
     var allData = {"ret_code":200,"ret_length":10,"all_length":10,"type":"","ret":[{"type":"hystrix","annotation":"Hystrix","name":"熔断降级组件","counts":50,"all_hits":1685,"max":536097,"min":622,"avg":51128,"sum":2556424},{"type":"lb","annotation":"LoadBalanced","name":"负载均衡组件","counts":45,"all_hits":45,"max":585543,"min":4377,"avg":209947,"sum":9447651},{"type":"gateway","annotation":"Jupiter","name":"网关组件","counts":50,"all_hits":2965028,"max":0,"min":0,"avg":0,"sum":0},{"type":"druid","annotation":"AlibabaDruid","name":"数据库连接池","counts":50,"all_hits":42712,"max":1561,"min":425,"avg":688,"sum":34441},{"type":"feign","annotation":"FeignClient","name":"Feign组件","counts":50,"all_hits":150526,"max":445307,"min":835,"avg":11301,"sum":565067},{"type":"cache","annotation":"Cacheable|CachePut|CacheEvict","name":"分布式缓存","counts":50,"all_hits":3176,"max":24177,"min":597,"avg":2238,"sum":111914},{"type":"mysql","annotation":"Mysql","name":"Mysql数据库","counts":50,"all_hits":45669,"max":1511,"min":378,"avg":598,"sum":29912},{"type":"gravity","annotation":"Gravity","name":"工作流引擎","counts":50,"all_hits":4777,"max":477329,"min":980,"avg":20939,"sum":1046972},{"type":"http","annotation":"Http","name":"Http","counts":50,"all_hits":2932468,"max":4071,"min":901,"avg":1757,"sum":87879},{"type":"mq","annotation":"RabbitMQ","name":"消息中间件","counts":50,"all_hits":817,"max":14850,"min":1,"avg":1151,"sum":57559}]};
-            $.get('http://119.3.143.21:8000/tracing/tracing-stats',
+    var searchParam = window.location.search.slice(1);
+  console.log("searchParam:"+searchParam);
+  var tracingUrl = '/tracing/tracing-stats?max_len=100'
+  if(searchParam){
+    tracingUrl = '/tracing/tracing-stats?' + searchParam;
+  }
+            $.get(tracingUrl,
             function(response) {
                 console.log('hi');
                 console.log(response);
