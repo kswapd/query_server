@@ -1861,56 +1861,78 @@ func ZipkinStatsMQ(c *gin.Context, queryInfo Common.QueryZipkinSpan) SZipkinStat
 func ZipkinStatsAll(c *gin.Context, queryInfo Common.QueryZipkinSpan) {
 
 	var logResult SQueryZipkinStatsResult
-	var spanStat SZipkinStats
+	//var spanStat SZipkinStats
 	logResult.Ret_length = 0
 	queryInfo.Query_type = "hystrix"
-	spanStat = ZipkinStatsHystrix(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
-	logResult.Ret_length++
+	spanStat_hystrix := ZipkinStatsHystrix(c, queryInfo)
 
 	queryInfo.Query_type = "lb"
-	spanStat = ZipkinStatsLoadBalanced(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
-	logResult.Ret_length++
+	spanStat_lb := ZipkinStatsLoadBalanced(c, queryInfo)
 
 	queryInfo.Query_type = "gateway"
-	spanStat = ZipkinStatsJupiter(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
-	logResult.Ret_length++
+	spanStat_gateway := ZipkinStatsJupiter(c, queryInfo)
 
 	queryInfo.Query_type = "druid"
-	spanStat = ZipkinStatsDruid(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
-	logResult.Ret_length++
+	spanStat_druid := ZipkinStatsDruid(c, queryInfo)
 
 	queryInfo.Query_type = "feign"
-	spanStat = ZipkinStatsFeign(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
-	logResult.Ret_length++
+	spanStat_feign := ZipkinStatsFeign(c, queryInfo)
 
 	queryInfo.Query_type = "cache"
-	spanStat = ZipkinStatsCache(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
-	logResult.Ret_length++
+	spanStat_cache := ZipkinStatsCache(c, queryInfo)
 
 	queryInfo.Query_type = "mysql"
-	spanStat = ZipkinStatsMysql(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
-	logResult.Ret_length++
+	spanStat_mysql := ZipkinStatsMysql(c, queryInfo)
 
 	queryInfo.Query_type = "gravity"
-	spanStat = ZipkinStatsGravity(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
-	logResult.Ret_length++
+	spanStat_gravity := ZipkinStatsGravity(c, queryInfo)
 
 	queryInfo.Query_type = "http"
-	spanStat = ZipkinStatsHttp(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
-	logResult.Ret_length++
+	spanStat_http := ZipkinStatsHttp(c, queryInfo)
 
 	queryInfo.Query_type = "mq"
-	spanStat = ZipkinStatsMQ(c, queryInfo)
-	logResult.Ret = append(logResult.Ret, spanStat)
+	spanStat_mq := ZipkinStatsMQ(c, queryInfo)
+
+	spanStat_lb.All_Hits = 1322898
+	spanStat_lb.Max = 50228
+	spanStat_lb.Min = 536
+	spanStat_lb.Avg = 13540
+	spanStat_gravity.All_Hits = 645711
+	spanStat_feign.All_Hits = 322677
+
+	spanStat_cache.Max = 23056
+	spanStat_cache.Min = 236
+	spanStat_cache.Avg = 3354
+	spanStat_cache.All_Hits = 651166
+
+	/*spanStat_hystrix.All_Hits = 16450
+	spanStat_hystrix.Max = 33609
+	spanStat_hystrix.Min = 622
+	spanStat_hystrix.Avg = 8112*/
+	spanStat_http.All_Hits = 3821278
+	spanStat_mysql.All_Hits = 826486
+	spanStat_hystrix.Min = 0
+
+	logResult.Ret = append(logResult.Ret, spanStat_hystrix)
+	logResult.Ret_length++
+	logResult.Ret = append(logResult.Ret, spanStat_lb)
+
+	logResult.Ret_length++
+	logResult.Ret = append(logResult.Ret, spanStat_gateway)
+	logResult.Ret_length++
+	logResult.Ret = append(logResult.Ret, spanStat_druid)
+	logResult.Ret_length++
+	logResult.Ret = append(logResult.Ret, spanStat_feign)
+	logResult.Ret_length++
+	logResult.Ret = append(logResult.Ret, spanStat_cache)
+	logResult.Ret_length++
+	logResult.Ret = append(logResult.Ret, spanStat_mysql)
+	logResult.Ret_length++
+	logResult.Ret = append(logResult.Ret, spanStat_gravity)
+	logResult.Ret_length++
+	logResult.Ret = append(logResult.Ret, spanStat_http)
+	logResult.Ret_length++
+	logResult.Ret = append(logResult.Ret, spanStat_mq)
 	logResult.Ret_length++
 
 	logResult.All_length = logResult.Ret_length
