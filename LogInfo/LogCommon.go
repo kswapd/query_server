@@ -1,15 +1,15 @@
 package LogInfo
+
 import (
-	"strings"
 	"flag"
+	"strings"
+
 	"github.com/gin-gonic/gin"
-
 )
-
 
 const (
 	ESUrl string = "http://192.168.100.224:8056"
-  //ESUrlList = []string{"str1", "str2", "str3", "str4"}
+	//ESUrlList = []string{"str1", "str2", "str3", "str4"}
 )
 
 var (
@@ -29,12 +29,10 @@ var (
 		"return_code": 403,
 		"err_info":    "invalid query",
 	}
-	ArgEsHost = flag.String("elasticsearch_cluster_host", "http://192.168.1.238:9200", "host1:port1, host2:port2")
-			
-	EsHostArr = strings.Split(*ArgEsHost,",");
+	ArgEsHost = flag.String("elasticsearch_cluster_host", "http://10.7.19.116:30011", "host1:port1, host2:port2")
 
+	EsHostArr = strings.Split(*ArgEsHost, ",")
 )
-
 
 type SContainerLogger struct {
 	Type string `json:"type"`
@@ -52,52 +50,68 @@ type SContainerLogger struct {
 	} `json:"data"`
 }
 
-
 type TracingModules struct {
-    Name          string `json:"name"`
-    Type   		string `json:"type"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 type SZipkinSpan struct {
+	TraceId          string `json:"traceId"`
+	Duration         int64  `json:"duration"`
+	Name             string `json:"name"`
+	Id               string `json:"id"`
+	Timestamp_millis int64  `json:"timestamp_millis"`
 
-		TraceId string `json:"traceId"`
-		Duration int64 `json:"duration"`
-		Name      string `json:"name"`
-		Id string `json:"id"`
-		Timestamp_millis      int64 `json:"timestamp_millis"`
-
-		Tags   map[string]interface{}  `json:"tags"`
+	Tags map[string]interface{} `json:"tags"`
 }
 
- type SQueryZipkinResult struct {
-	Return_code                 int64              `json:"return_code"`
-	Current_query_result_length int64              `json:"current_query_result_length"`
-	All_query_result_length     int64              `json:"all_query_result_length"`
-	Type                        string             `json:"type"`
+type SQueryZipkinResult struct {
+	Return_code                 int64         `json:"return_code"`
+	Current_query_result_length int64         `json:"current_query_result_length"`
+	All_query_result_length     int64         `json:"all_query_result_length"`
+	Type                        string        `json:"type"`
 	Query_result                []SZipkinSpan `json:"query_result"`
 }
 
-
 type SZipkinStats struct {
-
-
-		Type string `json:"type"`
-		Annotation string `json:"annotation"`
-		Name      string `json:"name"`
-		Counts      int64 `json:"counts"`
-		All_Hits      int64 `json:"all_hits"`
-		Max 		int64 `json:"max"`
-		Min 		int64 `json:"min"`
-		Avg 		int64 `json:"avg"`
-		Sum      int64 `json:"sum"`
+	Type       string `json:"type"`
+	Annotation string `json:"annotation"`
+	Name       string `json:"name"`
+	Counts     int64  `json:"counts"`
+	All_Hits   int64  `json:"all_hits"`
+	Max        int64  `json:"max"`
+	Min        int64  `json:"min"`
+	Avg        int64  `json:"avg"`
+	Sum        int64  `json:"sum"`
 }
 
- type SQueryZipkinStatsResult struct {
-	Ret_code                 int64              `json:"ret_code"`
-	Ret_length int64              `json:"ret_length"`
-	All_length int64              `json:"all_length"`
-	Type                        string             `json:"type"`
-	Ret                []SZipkinStats `json:"ret"`
+type SZipkinStatsPerDuration struct {
+	Start_Time int64   `json:"start_time"`
+	Doc_Count  int64   `json:"doc_count"`
+	TPS        float64 `json:"tps"`
+}
+
+type SZipkinStatsTPS struct {
+	Service_Name          string                    `json:"service_name"`
+	Start_Time            string                    `json:"start_time"`
+	Doc_Count             int64                     `json:"doc_count"`
+	Query_Result_Duration []SZipkinStatsPerDuration `json:"query_result_duration"`
+}
+
+type SQueryZipkinStatsTPSResult struct {
+	Ret_code   int64             `json:"ret_code"`
+	Ret_length int64             `json:"ret_length"`
+	All_length int64             `json:"all_length"`
+	Type       string            `json:"type"`
+	Ret        []SZipkinStatsTPS `json:"ret"`
+}
+
+type SQueryZipkinStatsResult struct {
+	Ret_code   int64          `json:"ret_code"`
+	Ret_length int64          `json:"ret_length"`
+	All_length int64          `json:"all_length"`
+	Type       string         `json:"type"`
+	Ret        []SZipkinStats `json:"ret"`
 }
 
 type SQueryContainerLogResult struct {
@@ -213,20 +227,14 @@ type SCustomLogger struct {
 	} `json:"data"`
 }
 
-
-
 type SFileLogger struct {
-  File_name                 string           `json:"file_name"`
-  Log_start_time string          `json:"log_start_time"`
-  Log_end_time     string          `json:"log_end_time"`
+	File_name      string `json:"file_name"`
+	Log_start_time string `json:"log_start_time"`
+	Log_end_time   string `json:"log_end_time"`
 }
-
 
 type SQueryCustomFileResult struct {
-  Return_code                 int64           `json:"return_code"`
-  Type                        string          `json:"type"`
-  Query_result                []SFileLogger `json:"query_result"`
+	Return_code  int64         `json:"return_code"`
+	Type         string        `json:"type"`
+	Query_result []SFileLogger `json:"query_result"`
 }
-
-
-

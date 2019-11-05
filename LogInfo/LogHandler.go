@@ -6,21 +6,17 @@ import (
 	"query_server/Common"
 	"strconv"
 	"strings"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	elastic "gopkg.in/olivere/elastic.v5"
 )
 
-
-
 func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
-	
-
-        
 
 	//client, err := elastic.NewClient(elastic.SetURL("http://192.168.100.224:8056", "http://192.168.100.225:8056", "http://192.168.100.226:8056"))
-	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	EsHostArr = strings.Split(*ArgEsHost, ",")
+	fmt.Printf("ES host info %s,%q.\n", *ArgEsHost, EsHostArr)
 	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 
 	pageIndex := 0
@@ -64,21 +60,18 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	//q = q.Must(elastic.NewMatchQuery("data.log_info.source", "stdout"))
 	//q = q.Should(elastic.NewTermQuery("type", "log_container"))
 
- if queryInfo.Container_eid != ""{
-    qSubc := elastic.NewBoolQuery()
-   //q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
-   // q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
-    q = q.Must(qSubc)
- }else{
-    q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
- }
+	if queryInfo.Container_eid != "" {
+		qSubc := elastic.NewBoolQuery()
+		//q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
+		// q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
+		q = q.Must(qSubc)
+	} else {
+		q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		//q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+	}
 
-
-
-	
 	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
 	if queryInfo.Query_content != "" {
@@ -108,7 +101,7 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	fmt.Println(s)
 
 	search := client.Search().Index("container_to_es.log*") //.Type("film")
-	search = search.Query(q)                                 //.Filter(andFilter)
+	search = search.Query(q)                                //.Filter(andFilter)
 
 	search = search.Sort("data.log_info.log_time", false)
 	search = search.From((pageIndex - 1) * lengthPerPage).Size(lengthPerPage)
@@ -159,7 +152,7 @@ func QueryContainerLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 }
 
 func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
-	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	fmt.Printf("ES host info %s,%q.\n", *ArgEsHost, EsHostArr)
 	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 	pageIndex := 0
 	lengthPerPage := 50
@@ -174,17 +167,15 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 		return
 	}
 
+	if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
+		c.JSON(200, InvalidQuery)
+		return
+	}
 
-
-  if pageIndex, err = strconv.Atoi(queryInfo.Page_index); err != nil {
-    c.JSON(200, InvalidQuery)
-    return
-  }
-
-  if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
-    c.JSON(200, InvalidQuery)
-    return
-  }
+	if lengthPerPage, err = strconv.Atoi(queryInfo.Length_per_page); err != nil {
+		c.JSON(200, InvalidQuery)
+		return
+	}
 
 	q := elastic.NewBoolQuery()
 
@@ -195,19 +186,17 @@ func QueryAppLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	//q = q.Should(elastic.NewTermQuery("type", "log_container"))
 	//q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
 
-
-if queryInfo.Container_eid != ""{
-    qSubc := elastic.NewBoolQuery()
-   //q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
-   // q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
-    q = q.Must(qSubc)
- }else{
-    q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
- }
-
+	if queryInfo.Container_eid != "" {
+		qSubc := elastic.NewBoolQuery()
+		//q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
+		// q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
+		q = q.Must(qSubc)
+	} else {
+		q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		//q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+	}
 
 	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
 
@@ -249,7 +238,7 @@ if queryInfo.Container_eid != ""{
 	fmt.Println(ss)
 
 	search := client.Search().Index("app_*_to_es.log*") //.Type("film")
-	search = search.Query(q)                             //.Filter(andFilter)
+	search = search.Query(q)                            //.Filter(andFilter)
 
 	search = search.Sort("data.log_info.log_time", false)
 	search = search.From((pageIndex - 1) * lengthPerPage).Size(lengthPerPage)
@@ -345,7 +334,7 @@ if queryInfo.Container_eid != ""{
 }
 
 func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
-	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	fmt.Printf("ES host info %s,%q.\n", *ArgEsHost, EsHostArr)
 	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 	pageIndex := 0
 	lengthPerPage := 50
@@ -355,7 +344,7 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 		return
 	}
 
-	if queryInfo.Container_uuid == "" || queryInfo.Start_time == "" || queryInfo.End_time == "" || queryInfo.Page_index == "" || queryInfo.Length_per_page == ""  ||queryInfo.File_name == ""{
+	if queryInfo.Container_uuid == "" || queryInfo.Start_time == "" || queryInfo.End_time == "" || queryInfo.Page_index == "" || queryInfo.Length_per_page == "" || queryInfo.File_name == "" {
 		c.JSON(200, InvalidQuery)
 		return
 	}
@@ -376,23 +365,20 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	//	q = q.Should(elastic.NewTermQuery("type", "log_container"))
 	//q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
 
-  if queryInfo.Container_eid != ""{
-    qSubc := elastic.NewBoolQuery()
-   //q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
-   // q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
-    q = q.Must(qSubc)
- }else{
-    q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
- }
+	if queryInfo.Container_eid != "" {
+		qSubc := elastic.NewBoolQuery()
+		//q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
+		// q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
+		q = q.Must(qSubc)
+	} else {
+		q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		//q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+	}
 
-
-
-  q = q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
+	q = q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
 	q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))
-	
 
 	if queryInfo.Query_content != "" {
 		qSub := elastic.NewBoolQuery()
@@ -445,7 +431,7 @@ func QueryCustomLog(c *gin.Context, queryInfo Common.QueryLogJson) {
 	fmt.Println(ss)
 
 	search := client.Search().Index("custom_log_to_es.log*") //.Type("film")
-	search = search.Query(q)                                  //.Filter(andFilter)
+	search = search.Query(q)                                 //.Filter(andFilter)
 
 	search = search.Sort("data.log_info.log_time", false)
 	search = search.From((pageIndex - 1) * lengthPerPage).Size(lengthPerPage)
@@ -490,20 +476,20 @@ func QueryLogInfo(c *gin.Context) {
 
 	queryInfo.Query_type = c.Query("query_type")
 	queryInfo.Container_uuid = c.Query("container_uuid")
-  queryInfo.Container_eid = c.Query("container_eid")
+	queryInfo.Container_eid = c.Query("container_eid")
 	queryInfo.Environment_id = c.Query("environment_id")
 	queryInfo.Start_time = c.Query("start_time")
 	queryInfo.End_time = c.Query("end_time")
 	queryInfo.Query_content = c.Query("query_content")
 	queryInfo.Length_per_page = c.Query("length_per_page")
 	queryInfo.Page_index = c.Query("page_index")
-  queryInfo.File_name = c.Query("file_name")
+	queryInfo.File_name = c.Query("file_name")
 	//c.BindJSON(&queryInfo)
 	//c.JSON(200, gin.H{"type": queryInfo.Query_type})
 
 	fmt.Printf("%#v.\n", queryInfo)
-	EsHostArr = strings.Split(*ArgEsHost,",");
-	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	EsHostArr = strings.Split(*ArgEsHost, ",")
+	fmt.Printf("ES host info %s,%q.\n", *ArgEsHost, EsHostArr)
 	switch queryInfo.Query_type {
 	case "container":
 		QueryContainerLog(c, queryInfo)
@@ -517,9 +503,9 @@ func QueryLogInfo(c *gin.Context) {
 	}
 
 }
-func QueryTracingModules(c *gin.Context){
+func QueryTracingModules(c *gin.Context) {
 
-	tracingModules:= []TracingModules {
+	tracingModules := []TracingModules{
 		TracingModules{
 			"负载均衡组件",
 			"lb",
@@ -566,7 +552,7 @@ func QueryTracingModules(c *gin.Context){
 		interfaceSlice[i] = tag
 	}*/
 
-	c.JSON(200, tracingModules) 
+	c.JSON(200, tracingModules)
 }
 func QueryZipkinInfo(c *gin.Context) {
 	var queryInfo Common.QueryZipkinSpan
@@ -576,12 +562,11 @@ func QueryZipkinInfo(c *gin.Context) {
 	queryInfo.Query_type = c.Query("query_type")
 	queryInfo.Start_time = c.Query("start_time")
 	queryInfo.End_time = c.Query("end_time")
-	queryInfo.Lookback,_ = strconv.ParseInt(c.Query("lookback"), 10, 64)
+	queryInfo.Lookback, _ = strconv.ParseInt(c.Query("lookback"), 10, 64)
 	queryInfo.Max_len, _ = strconv.ParseInt(c.Query("max_len"), 10, 64)
 	fmt.Printf("%#v.\n", queryInfo)
 
-
-	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	fmt.Printf("ES host info %s,%q.\n", *ArgEsHost, EsHostArr)
 	IsAll = false
 	switch queryInfo.Query_type {
 
@@ -616,12 +601,31 @@ func QueryZipkinInfo(c *gin.Context) {
 
 }
 
+func QueryTracingTPS(c *gin.Context) {
+	var queryInfo Common.QueryZipkinSpan
+
+	//  c.BindJSON(&queryInfo)
+
+	queryInfo.Query_type = c.Query("query_type")
+	queryInfo.Start_time = c.Query("start_time")
+	queryInfo.End_time = c.Query("end_time")
+	queryInfo.Lookback, _ = strconv.ParseInt(c.Query("lookback"), 10, 64)
+	queryInfo.Max_len, _ = strconv.ParseInt(c.Query("max_len"), 10, 64)
+	queryInfo.Interval, _ = strconv.ParseInt(c.Query("interval"), 10, 64)
+	fmt.Printf("%#v.\n", queryInfo)
+
+	fmt.Printf("ES host info %s,%q.\n", *ArgEsHost, EsHostArr)
+	IsAll = false
+
+	ZipkinStatsTPS(c, queryInfo)
+
+}
+
 func QueryCustomInfo(c *gin.Context) {
 	var queryInfo Common.QueryCustomJson
 
-
 	queryInfo.Container_uuid = c.Query("container_uuid")
-  queryInfo.Container_eid = c.Query("container_eid")
+	queryInfo.Container_eid = c.Query("container_eid")
 	queryInfo.Environment_id = c.Query("environment_id")
 	queryInfo.Start_time = c.Query("start_time")
 	queryInfo.End_time = c.Query("end_time")
@@ -629,7 +633,7 @@ func QueryCustomInfo(c *gin.Context) {
 	//c.JSON(200, gin.H{"type": queryInfo.Query_type})
 
 	fmt.Printf("%#v.\n", queryInfo)
-	fmt.Printf("ES host info %s,%q.\n",  *ArgEsHost, EsHostArr);
+	fmt.Printf("ES host info %s,%q.\n", *ArgEsHost, EsHostArr)
 	client, err := elastic.NewClient(elastic.SetURL(EsHostArr...))
 	if err != nil {
 		c.JSON(200, ConnElasticsearchErr)
@@ -641,22 +645,22 @@ func QueryCustomInfo(c *gin.Context) {
 		c.JSON(200, InvalidQuery)
 		return
 	}
-	 q := elastic.NewBoolQuery()
+	q := elastic.NewBoolQuery()
 	//q := elastic.NewMatchAllQuery()
 
-   if queryInfo.Container_eid != ""{
-    qSubc := elastic.NewBoolQuery()
-   //q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
-   // q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
-    q = q.Must(qSubc)
- }else{
-    q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
-    //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
- }
-	  //q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
-	  //q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))*/
+	if queryInfo.Container_eid != "" {
+		qSubc := elastic.NewBoolQuery()
+		//q.Must(elastic.NewTermQuery("data.app_file.keyword", queryInfo.File_name))
+		// q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		qSubc = qSubc.Should(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_eid))
+		q = q.Must(qSubc)
+	} else {
+		q = q.Must(elastic.NewTermQuery("data.container_uuid.keyword", queryInfo.Container_uuid))
+		//q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+	}
+	//q = q.Must(elastic.NewMatchQuery("data.container_uuid", queryInfo.Container_uuid))
+	//q = q.Must(elastic.NewRangeQuery("data.log_info.log_time").Gt(queryInfo.Start_time).Lt(queryInfo.End_time))*/
 
 	//agg := elastic.NewTermsAggregation().Field("data.app_file")
 
@@ -691,27 +695,26 @@ func QueryCustomInfo(c *gin.Context) {
 	//fmt.Printf("%#v---\n", searchResult.Hits.Hits)
 	if aggret, found := searchResult.Aggregations.Terms("files"); found {
 
-  		fmt.Printf("Found aggs :%d.\n", len(aggret.Buckets))
-  		
+		fmt.Printf("Found aggs :%d.\n", len(aggret.Buckets))
 
-      var fileLogger SFileLogger
-    var fileResult SQueryCustomFileResult
-    fileResult.Return_code = 200
-    fileResult.Type = "custom_log"
-    fileLogger.Log_start_time = "2017-01-20T06:11:01.820+00:00"
-    fileLogger.Log_end_time = "2017-01-20T06:11:01.820+00:00"
+		var fileLogger SFileLogger
+		var fileResult SQueryCustomFileResult
+		fileResult.Return_code = 200
+		fileResult.Type = "custom_log"
+		fileLogger.Log_start_time = "2017-01-20T06:11:01.820+00:00"
+		fileLogger.Log_end_time = "2017-01-20T06:11:01.820+00:00"
 
-  	for _, bucket := range aggret.Buckets {
-  			//Genres[bucket.Key.(string)] = bucket.DocCount
-  			fmt.Printf("%s, %d...\n", bucket.Key.(string), bucket.DocCount)
-        fileLogger.File_name = bucket.Key.(string)
-        fileResult.Query_result = append(fileResult.Query_result, fileLogger)
-  		//fmt.Printf("%#v...\n", *Genres)
-  	}
-    c.JSON(200, fileResult)
+		for _, bucket := range aggret.Buckets {
+			//Genres[bucket.Key.(string)] = bucket.DocCount
+			fmt.Printf("%s, %d...\n", bucket.Key.(string), bucket.DocCount)
+			fileLogger.File_name = bucket.Key.(string)
+			fileResult.Query_result = append(fileResult.Query_result, fileLogger)
+			//fmt.Printf("%#v...\n", *Genres)
+		}
+		c.JSON(200, fileResult)
 
-  }else{
-    c.JSON(200, QueryNoResult)
-  }
+	} else {
+		c.JSON(200, QueryNoResult)
+	}
 
 }

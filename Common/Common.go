@@ -2,26 +2,24 @@ package Common
 
 type QueryLogJson struct {
 	Query_type      string `json:"query_type"`
-	File_name      string `json:"file_name"`
+	File_name       string `json:"file_name"`
 	Container_uuid  string `json:"container_uuid"`
-	Container_eid  string `json:"container_eid"`
+	Container_eid   string `json:"container_eid"`
 	Environment_id  string `json:"environment_id"`
 	Start_time      string `json:"start_time"`
 	End_time        string `json:"end_time"`
 	Query_content   string `json:"query_content"`
-	Length_per_page string    `json:"length_per_page"`
-	Page_index      string    `json:"page_index"`
+	Length_per_page string `json:"length_per_page"`
+	Page_index      string `json:"page_index"`
 }
-
 
 type QueryCustomJson struct {
-	Container_uuid  string `json:"container_uuid"`
+	Container_uuid string `json:"container_uuid"`
 	Container_eid  string `json:"container_eid"`
-	Environment_id  string `json:"environment_id"`
-	Start_time      string `json:"start_time"`
-	End_time        string `json:"end_time"`
+	Environment_id string `json:"environment_id"`
+	Start_time     string `json:"start_time"`
+	End_time       string `json:"end_time"`
 }
-
 
 type QueryMonitorJson struct {
 	Query_type     string `json:"query_type"`
@@ -39,11 +37,11 @@ type QueryContainerStatus struct {
 	End_time       string `json:"end_time"`
 }
 
-
 type QueryZipkinSpan struct {
-	Start_time      string `json:"start_time"`
-	End_time        string `json:"end_time"`
-	Query_type     string `json:"query_type"`
-	Lookback		int64 `json:"lookback"`
-	Max_len 		int64 `json:"max_len"`
+	Start_time string `json:"start_time"`
+	End_time   string `json:"end_time"`
+	Query_type string `json:"query_type"`
+	Lookback   int64  `json:"lookback"`
+	Max_len    int64  `json:"max_len"`
+	Interval   int64  `json:"interval"`
 }

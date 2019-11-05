@@ -1893,7 +1893,7 @@ func ZipkinStatsAll(c *gin.Context, queryInfo Common.QueryZipkinSpan) {
 	queryInfo.Query_type = "mq"
 	spanStat_mq := ZipkinStatsMQ(c, queryInfo)
 
-	spanStat_lb.All_Hits = 1322898
+	/*spanStat_lb.All_Hits = 1322898
 	spanStat_lb.Max = 50228
 	spanStat_lb.Min = 536
 	spanStat_lb.Avg = 13540
@@ -1903,15 +1903,15 @@ func ZipkinStatsAll(c *gin.Context, queryInfo Common.QueryZipkinSpan) {
 	spanStat_cache.Max = 23056
 	spanStat_cache.Min = 236
 	spanStat_cache.Avg = 3354
-	spanStat_cache.All_Hits = 651166
+	spanStat_cache.All_Hits = 651166*/
 
 	/*spanStat_hystrix.All_Hits = 16450
 	spanStat_hystrix.Max = 33609
 	spanStat_hystrix.Min = 622
 	spanStat_hystrix.Avg = 8112*/
-	spanStat_http.All_Hits = 3821278
+	/*spanStat_http.All_Hits = 3821278
 	spanStat_mysql.All_Hits = 826486
-	spanStat_hystrix.Min = 0
+	spanStat_hystrix.Min = 0*/
 
 	logResult.Ret = append(logResult.Ret, spanStat_hystrix)
 	logResult.Ret_length++
